@@ -10,7 +10,8 @@ node_modules/
 
 # Build outputs
 /build
-/dist
+dist/
+**/dist/
 out/
 
 # IDE

@@ -5,6 +5,7 @@
     "apps/*"
   ],
   "scripts": {
+    "build": "npm --prefix apps/web run build",
     "dev:web": "npm --prefix apps/web run dev",
     "dev:rider": "npm --prefix apps/rider run dev",
     "build:web": "npm --prefix apps/web run build",

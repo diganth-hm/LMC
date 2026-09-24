@@ -1,0 +1,11 @@
+{
+  "name": "lastmile-carbon-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix Frontend/apps/web run build",
+    "build:web": "npm --prefix Frontend/apps/web run build",
+    "build:rider": "npm --prefix Frontend/apps/rider run build",
+    "dev:web": "npm --prefix Frontend/apps/web run dev",
+    "dev:rider": "npm --prefix Frontend/apps/rider run dev"
+  }
+}
