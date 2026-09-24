@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && prisma db push --accept-data-loss && ts-node seed/seed.ts && tsc",
     "start": "node dist/server.js",
     "seed": "ts-node seed/seed.ts",
     "test": "jest --config jest.config.js",
@@ -34,17 +34,17 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "pdf-lib": "^1.17.1",
+    "prisma": "^5.22.0",
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.4",
+    "ts-node": "^10.9.2",
     "typescript": "5.9.3",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "prisma": "^5.22.0",
     "ts-jest": "^29.2.5",
-    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0"
   }
 }
