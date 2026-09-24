@@ -18,7 +18,7 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   data,
   onRowClick,
@@ -67,7 +67,7 @@ export function DataTable<T extends Record<string, unknown>>({
             >
               {columns.map((col) => (
                 <td key={col.key} className={`py-3 px-4 text-gray-700 ${col.className || ''}`}>
-                  {col.render ? col.render(item) : String(item[col.key] ?? '')}
+                  {col.render ? col.render(item) : String((item as Record<string, unknown>)[col.key] ?? '')}
                 </td>
               ))}
             </tr>

@@ -69,6 +69,7 @@ export function usePurchaseCredits() {
       queryClient.invalidateQueries({ queryKey: ['buyer', 'inventory'] });
       queryClient.invalidateQueries({ queryKey: ['buyer', 'orders'] });
       queryClient.invalidateQueries({ queryKey: ['buyer', 'impact'] });
+      queryClient.invalidateQueries({ queryKey: ['buyer', 'certificate'] });
     },
   });
 }

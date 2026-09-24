@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Leaf } from 'lucide-react';
+import { apiClient } from '../services/api/client';
+
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -10,24 +13,57 @@ export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!phone || phone.length < 10) { setError('Enter a valid phone number'); return; }
     setError('');
-    setStep('otp');
+
+    if (USE_MOCKS) {
+      setStep('otp');
+      return;
+    }
+
+    // Real mode: POST /auth/rider/login
+    setLoading(true);
+    try {
+      await apiClient.post('/auth/rider/login', { phone });
+      setStep('otp');
+    } catch (err: unknown) {
+      const apiErr = err as { message?: string };
+      setError(apiErr?.message || 'Failed to send OTP');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     setLoading(true);
     setError('');
-    setTimeout(() => {
-      if (otp.length >= 4) {
-        localStorage.setItem('lmc_rider_token', 'mock-rider-token');
-        navigate('/home');
-      } else {
-        setError('Invalid OTP');
-        setLoading(false);
-      }
-    }, 500);
+
+    if (USE_MOCKS) {
+      setTimeout(() => {
+        if (otp.length >= 4) {
+          localStorage.setItem('lmc_rider_token', 'mock-rider-token');
+          navigate('/home');
+        } else {
+          setError('Invalid OTP');
+          setLoading(false);
+        }
+      }, 500);
+      return;
+    }
+
+    // Real mode: POST /auth/rider/verify-otp
+    try {
+      const res = await apiClient.post('/auth/rider/verify-otp', { phone, otp });
+      const data = res.data;
+      localStorage.setItem('lmc_rider_token', data?.token || '');
+      navigate('/home');
+    } catch (err: unknown) {
+      const apiErr = err as { message?: string };
+      setError(apiErr?.message || 'Invalid OTP');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,9 +93,10 @@ export const Login: React.FC = () => {
             {error && <p className="text-sm text-red-500">{error}</p>}
             <button
               onClick={handleContinue}
-              disabled={!phone}
-              className="w-full py-3 bg-[#0F6E56] text-white font-semibold rounded-md disabled:opacity-40 hover:bg-[#0c5945] transition-colors"
+              disabled={!phone || loading}
+              className="w-full py-3 bg-[#0F6E56] text-white font-semibold rounded-md disabled:opacity-40 hover:bg-[#0c5945] transition-colors flex items-center justify-center gap-2"
             >
+              {loading && <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>}
               Continue
             </button>
           </div>
@@ -98,11 +135,13 @@ export const Login: React.FC = () => {
               {loading && <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>}
               Verify & Login
             </button>
-            <p className="text-xs text-center text-gray-400">Resend OTP in 30s</p>
+            <p className="text-xs text-center text-gray-400">
+              {USE_MOCKS ? 'Demo · Enter any 4-digit OTP' : 'OTP: 1234 (demo mode)'}
+            </p>
           </div>
         )}
 
-        <p className="text-xs text-center text-gray-400 mt-8">Demo · Enter any 4-digit OTP</p>
+        <p className="text-xs text-center text-gray-400 mt-8">{USE_MOCKS ? 'Demo · Mock data enabled' : 'Connected to live backend'}</p>
       </div>
     </div>
   );

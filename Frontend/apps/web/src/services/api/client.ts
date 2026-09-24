@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { ApiError } from '../../types';
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 export const apiClient = axios.create({
   baseURL,
@@ -23,16 +23,30 @@ apiClient.interceptors.request.use(
 );
 
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError<{ message?: string; code?: string }>) => {
+  (response) => {
+    // Backend wraps all responses in { success, data, error } envelope.
+    // Unwrap the envelope so service functions can do res.data and get the inner payload.
+    const body = response.data;
+    if (body && typeof body === 'object' && 'success' in body && 'data' in body) {
+      response.data = body.data;
+    }
+    return response;
+  },
+  (error: AxiosError<{ success?: boolean; error?: { code?: string; message?: string } }>) => {
     let normalizedError: ApiError;
 
     if (error.response) {
+      const body = error.response.data;
       normalizedError = {
         status: error.response.status,
-        message: error.response.data?.message || error.message || 'An error occurred on the server',
-        code: error.response.data?.code || `HTTP_${error.response.status}`,
+        message: body?.error?.message || error.message || 'An error occurred on the server',
+        code: body?.error?.code || `HTTP_${error.response.status}`,
       };
+
+      // On 401, clear stored token and redirect to login
+      if (error.response.status === 401) {
+        localStorage.removeItem('lmc_auth_token');
+      }
     } else if (error.request) {
       normalizedError = {
         status: 'network',

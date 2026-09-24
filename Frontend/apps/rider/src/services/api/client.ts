@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { ApiError } from '../../types';
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 export const apiClient = axios.create({
   baseURL,
@@ -16,11 +16,26 @@ apiClient.interceptors.request.use((config) => {
 });
 
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError<{ message?: string; code?: string }>) => {
+  (response) => {
+    // Backend wraps all responses in { success, data, error } envelope — unwrap it
+    const body = response.data;
+    if (body && typeof body === 'object' && 'success' in body && 'data' in body) {
+      response.data = body.data;
+    }
+    return response;
+  },
+  (error: AxiosError<{ success?: boolean; error?: { code?: string; message?: string } }>) => {
     let normalized: ApiError;
     if (error.response) {
-      normalized = { status: error.response.status, message: error.response.data?.message || 'Server error', code: error.response.data?.code || `HTTP_${error.response.status}` };
+      const body = error.response.data;
+      normalized = {
+        status: error.response.status,
+        message: body?.error?.message || 'Server error',
+        code: body?.error?.code || `HTTP_${error.response.status}`,
+      };
+      if (error.response.status === 401) {
+        localStorage.removeItem('lmc_rider_token');
+      }
     } else if (error.request) {
       normalized = { status: 'network', message: 'Network error. Check your connection.', code: 'NETWORK_ERROR' };
     } else {

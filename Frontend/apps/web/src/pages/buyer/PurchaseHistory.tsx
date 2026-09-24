@@ -7,6 +7,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { Download } from 'lucide-react';
+import { Order } from '../../types';
 
 export const PurchaseHistory: React.FC = () => {
   const navigate = useNavigate();
@@ -24,20 +25,19 @@ export const PurchaseHistory: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-md border border-gray-200">
-        <DataTable
+        <DataTable<Order>
           columns={[
-            { key: 'timestamp', header: 'Date', render: (item) => <span className="text-sm">{(item as Record<string, unknown>).timestamp as string}</span> },
-            { key: 'id', header: 'Order ID', render: (item) => <span className="font-mono text-xs text-gray-500">#{(item as Record<string, unknown>).id as string}</span> },
-            { key: 'batchTitle', header: 'Batch', render: (item) => <span className="text-sm font-medium truncate max-w-[200px] block">{(item as Record<string, unknown>).batchTitle as string}</span> },
-            { key: 'quantityTonnes', header: 'Tonnes', render: (item) => <span className="font-semibold">{(item as Record<string, unknown>).quantityTonnes as number}</span> },
-            { key: 'subtotalRupees', header: 'Amount', render: (item) => <span className="font-semibold">₹{((item as Record<string, unknown>).subtotalRupees as number).toLocaleString()}</span> },
+            { key: 'timestamp', header: 'Date', render: (item) => <span className="text-sm">{item.timestamp}</span> },
+            { key: 'id', header: 'Order ID', render: (item) => <span className="font-mono text-xs text-gray-500">#{item.id}</span> },
+            { key: 'batchTitle', header: 'Batch', render: (item) => <span className="text-sm font-medium truncate max-w-[200px] block">{item.batchTitle}</span> },
+            { key: 'quantityTonnes', header: 'Tonnes', render: (item) => <span className="font-semibold">{item.quantityTonnes}</span> },
+            { key: 'subtotalRupees', header: 'Amount', render: (item) => <span className="font-semibold">₹{item.subtotalRupees.toLocaleString()}</span> },
             { key: 'status', header: 'Status', render: (item) => {
-              const status = (item as Record<string, unknown>).status as string;
-              return <Badge variant="status" status={status === 'Completed' ? 'green' : status === 'Processing' ? 'amber' : 'coral'}>{status}</Badge>;
+              return <Badge variant="status" status={item.status === 'Completed' ? 'green' : item.status === 'Processing' ? 'amber' : 'coral'}>{item.status}</Badge>;
             }},
             { key: 'cert', header: '', render: (item) => (
               <button
-                onClick={(e) => { e.stopPropagation(); navigate(`/buyer/certificates/${(item as Record<string, unknown>).certificateId as string}`); }}
+                onClick={(e) => { e.stopPropagation(); navigate(`/buyer/certificates/${item.certificateId}`); }}
                 className="text-xs text-[#D85A30] hover:underline font-medium flex items-center gap-1"
               >
                 <Download className="w-3 h-3" /> Certificate
@@ -45,7 +45,7 @@ export const PurchaseHistory: React.FC = () => {
             )},
           ]}
           data={orders}
-          onRowClick={(item) => navigate(`/buyer/certificates/${(item as Record<string, unknown>).certificateId as string}`)}
+          onRowClick={(item) => navigate(`/buyer/certificates/${item.certificateId}`)}
         />
       </div>
     </div>

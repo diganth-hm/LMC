@@ -13,6 +13,7 @@ import {
   Certificate,
   BuyerImpact,
   BuyerProfile,
+  SampleDeliveryRecord,
 } from '../../types';
 
 export const mockFleetOverview: FleetOverview = {

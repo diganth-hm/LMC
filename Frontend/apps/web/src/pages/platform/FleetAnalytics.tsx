@@ -5,6 +5,7 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { DataTable } from '../../components/ui/DataTable';
 import { Badge } from '../../components/ui/Badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { CityStat } from '../../types';
 
 export const FleetAnalytics: React.FC = () => {
   const { data: cities, isLoading, error, refetch } = useCityStats();
@@ -40,15 +41,15 @@ export const FleetAnalytics: React.FC = () => {
         <div className="p-4 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-800">City Breakdown</h2>
         </div>
-        <DataTable
+        <DataTable<CityStat>
           columns={[
             { key: 'name', header: 'City', sortable: true },
-            { key: 'activeRiders', header: 'Active Riders', sortable: true, render: (item) => <span className="font-medium">{(item as Record<string, unknown>).activeRiders as number}</span> },
-            { key: 'co2SavedKg', header: 'CO₂ Saved (kg)', sortable: true, render: (item) => <span>{((item as Record<string, unknown>).co2SavedKg as number).toLocaleString()} kg</span> },
+            { key: 'activeRiders', header: 'Active Riders', sortable: true, render: (item) => <span className="font-medium">{item.activeRiders}</span> },
+            { key: 'co2SavedKg', header: 'CO₂ Saved (kg)', sortable: true, render: (item) => <span>{item.co2SavedKg.toLocaleString()} kg</span> },
             { key: 'avgGRS', header: 'Avg GRS', sortable: true },
             { key: 'greenAdoptionPct', header: 'Green Adoption', sortable: true, render: (item) => (
-              <Badge variant="status" status={(item as Record<string, unknown>).greenAdoptionPct as number >= 80 ? 'green' : 'amber'}>
-                {(item as Record<string, unknown>).greenAdoptionPct as number}%
+              <Badge variant="status" status={item.greenAdoptionPct >= 80 ? 'green' : 'amber'}>
+                {item.greenAdoptionPct}%
               </Badge>
             )},
           ]}

@@ -10,6 +10,8 @@ interface AuthState {
   switchRole: (role: UserRole) => void;
 }
 
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
+
 const defaultPlatformUser: User = {
   id: 'usr-platform-01',
   name: 'Swiggy Ops Admin',
@@ -19,10 +21,14 @@ const defaultPlatformUser: User = {
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
 };
 
+// Try to restore session from localStorage
+const storedToken = localStorage.getItem('lmc_auth_token');
+
 export const useAuthStore = create<AuthState>((set) => ({
-  user: defaultPlatformUser,
-  token: 'mock-jwt-token-12345',
-  isAuthenticated: true,
+  // In mock mode, start pre-authenticated; in real mode, require actual login
+  user: USE_MOCKS ? defaultPlatformUser : (storedToken ? null : null),
+  token: USE_MOCKS ? 'mock-jwt-token-12345' : storedToken,
+  isAuthenticated: USE_MOCKS ? true : Boolean(storedToken),
   login: (user, token) => {
     localStorage.setItem('lmc_auth_token', token);
     set({ user, token, isAuthenticated: true });
@@ -32,16 +38,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: null, token: null, isAuthenticated: false });
   },
   switchRole: (role) => {
-    const newUser: User = role === 'platform_admin'
-      ? defaultPlatformUser
-      : {
-          id: 'usr-buyer-01',
-          name: 'Manipal Group ESG Lead',
-          email: 'esg-procurement@manipal.edu',
-          role: 'corporate_buyer',
-          companyName: 'Manipal Group ESG Solutions',
-          avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-        };
-    set({ user: newUser });
+    if (USE_MOCKS) {
+      const newUser: User = role === 'platform_admin'
+        ? defaultPlatformUser
+        : {
+            id: 'usr-buyer-01',
+            name: 'Manipal Group ESG Lead',
+            email: 'esg-procurement@manipal.edu',
+            role: 'corporate_buyer',
+            companyName: 'Manipal Group ESG Solutions',
+            avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
+          };
+      set({ user: newUser });
+    }
   },
 }));

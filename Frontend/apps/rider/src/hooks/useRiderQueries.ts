@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { riderService } from '../services/api/riders';
 
 export function useRiderProfile() {
@@ -13,8 +13,30 @@ export function useDeliveryAssignment() {
 export function useRoutes(deliveryId: string) {
   return useQuery({ queryKey: ['rider', 'routes', deliveryId], queryFn: () => riderService.getRoutes(deliveryId), enabled: Boolean(deliveryId) });
 }
+export function useSelectRoute() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (routeId: string) => riderService.selectRoute(routeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rider', 'assignment'] });
+    },
+  });
+}
 export function useCompleteDelivery() {
-  return useMutation({ mutationFn: (deliveryId: string) => riderService.completeDelivery(deliveryId) });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (deliveryId: string) => riderService.completeDelivery(deliveryId),
+    onSuccess: () => {
+      // After delivery completion, refresh dashboard stats, wallet, CO2 history, route history
+      queryClient.invalidateQueries({ queryKey: ['rider', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'assignment'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'wallet-balance'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'co2-history'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'route-history'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'weekly-earnings'] });
+    },
+  });
 }
 export function useWalletBalance() {
   return useQuery({ queryKey: ['rider', 'wallet-balance'], queryFn: riderService.getWalletBalance });

@@ -7,6 +7,7 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { DataTable } from '../../components/ui/DataTable';
 import { Download, CreditCard } from 'lucide-react';
+import { InvoiceItem } from '../../types';
 
 export const Billing: React.FC = () => {
   const { data: invoices, isLoading, error, refetch } = useInvoices();
@@ -53,16 +54,15 @@ export const Billing: React.FC = () => {
             <span className="text-xs text-gray-400">Payment method on file</span>
           </div>
         </div>
-        <DataTable
+        <DataTable<InvoiceItem>
           columns={[
-            { key: 'period', header: 'Period', render: (item) => <span className="font-medium">{(item as Record<string, unknown>).period as string}</span> },
+            { key: 'period', header: 'Period', render: (item) => <span className="font-medium">{item.period}</span> },
             { key: 'riderCount', header: 'Riders' },
-            { key: 'amountRupees', header: 'Amount', render: (item) => <span className="font-semibold">₹{((item as Record<string, unknown>).amountRupees as number).toLocaleString()}</span> },
+            { key: 'amountRupees', header: 'Amount', render: (item) => <span className="font-semibold">₹{item.amountRupees.toLocaleString()}</span> },
             { key: 'status', header: 'Status', render: (item) => {
-              const status = (item as Record<string, unknown>).status as string;
-              return <Badge variant="status" status={status === 'Paid' ? 'green' : status === 'Pending' ? 'amber' : 'coral'}>{status}</Badge>;
+              return <Badge variant="status" status={item.status === 'Paid' ? 'green' : item.status === 'Pending' ? 'amber' : 'coral'}>{item.status}</Badge>;
             }},
-            { key: 'bonusPayoutTotalRupees', header: 'Rider Bonuses', render: (item) => <span className="text-gray-500">₹{((item as Record<string, unknown>).bonusPayoutTotalRupees as number).toLocaleString()}</span> },
+            { key: 'bonusPayoutTotalRupees', header: 'Rider Bonuses', render: (item) => <span className="text-gray-500">₹{item.bonusPayoutTotalRupees.toLocaleString()}</span> },
             { key: 'actions', header: '', render: () => (
               <Button variant="tertiary" size="sm" className="text-[#5B4B8A]">
                 <Download className="w-3.5 h-3.5 mr-1" /> Invoice
