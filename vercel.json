@@ -1,4 +1,4 @@
 {
-  "buildCommand": "npm --prefix Frontend/apps/web run build",
-  "outputDirectory": "Frontend/apps/web/dist"
+  "buildCommand": "node -e \"const fs = require('fs'); const cp = require('child_process'); const p = fs.existsSync('apps/web') ? 'apps/web' : 'Frontend/apps/web'; cp.execSync('npm --prefix ' + p + ' run build', {stdio: 'inherit'}); if (p.startsWith('Frontend/')) fs.cpSync('Frontend/apps/web/dist', 'dist', {recursive: true});\"",
+  "outputDirectory": "dist"
 }

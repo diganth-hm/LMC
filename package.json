@@ -2,7 +2,7 @@
   "name": "lastmile-carbon-monorepo",
   "private": true,
   "scripts": {
-    "build": "npm --prefix Frontend/apps/web run build && node -e \"require('fs').cpSync('Frontend/apps/web/dist', 'dist', {recursive: true})\"",
+    "build": "node -e \"const fs = require('fs'); const cp = require('child_process'); const p = fs.existsSync('apps/web') ? 'apps/web' : 'Frontend/apps/web'; cp.execSync('npm --prefix ' + p + ' run build', {stdio: 'inherit'}); if (p.startsWith('Frontend/')) fs.cpSync('Frontend/apps/web/dist', 'dist', {recursive: true});\"",
     "build:web": "npm --prefix Frontend/apps/web run build",
     "build:rider": "npm --prefix Frontend/apps/rider run build",
     "dev:web": "npm --prefix Frontend/apps/web run dev",
