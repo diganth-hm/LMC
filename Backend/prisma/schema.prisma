@@ -1,0 +1,324 @@
+// ──────────────────────────────────────────────
+// LastMile Carbon — Complete Database Schema
+// 15 tables, PostgreSQL, all PKs are UUIDs
+// Section 4 of architecture document
+// ──────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────
+
+enum UserRole {
+  rider
+  platform_admin
+  corporate_buyer
+}
+
+enum RiderTier {
+  bronze
+  silver
+  gold
+  platinum
+}
+
+enum VehicleType {
+  petrol_2w
+  ev_2w
+  diesel_3w
+  cng_3w
+}
+
+enum DeliveryStatus {
+  assigned
+  in_progress
+  completed
+}
+
+enum RewardStatus {
+  pending
+  paid
+  failed
+}
+
+enum WalletTransactionType {
+  credit
+  withdrawal
+}
+
+enum CreditBatchStatus {
+  pending_verification
+  verified
+  sold_out
+}
+
+enum PurchaseStatus {
+  completed
+  failed
+}
+
+// ─── Tables ──────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid())
+  email         String?  @unique
+  phone         String?  @unique
+  password_hash String?
+  role          UserRole
+  created_at    DateTime @default(now())
+
+  rider          Rider?
+  corporate_buyer CorporateBuyer?
+  fleet          Fleet?
+
+  @@map("users")
+}
+
+model Rider {
+  id           String    @id @default(uuid())
+  user_id      String    @unique
+  name         String
+  tier         RiderTier @default(bronze)
+  grs_score    Float     @default(0)
+  member_since DateTime  @default(now())
+
+  user          User               @relation(fields: [user_id], references: [id])
+  vehicles      Vehicle[]
+  deliveries    Delivery[]
+  rewards       Reward[]
+  wallet_transactions WalletTransaction[]
+
+  @@index([tier])
+  @@map("riders")
+}
+
+model Vehicle {
+  id            String      @id @default(uuid())
+  rider_id      String
+  type          VehicleType
+  registered_at DateTime    @default(now())
+
+  rider Rider @relation(fields: [rider_id], references: [id])
+
+  @@index([rider_id])
+  @@map("vehicles")
+}
+
+model Fleet {
+  id                      String  @id @default(uuid())
+  name                    String
+  platform_admin_user_id  String  @unique
+  saas_rate_per_rider     Float   @default(150)
+
+  platform_admin User       @relation(fields: [platform_admin_user_id], references: [id])
+  deliveries     Delivery[]
+
+  @@map("fleets")
+}
+
+model City {
+  id    String @id @default(uuid())
+  name  String @unique
+  state String
+
+  deliveries    Delivery[]
+  credit_batches CreditBatch[]
+
+  @@map("cities")
+}
+
+model Delivery {
+  id           String         @id @default(uuid())
+  rider_id     String
+  fleet_id     String
+  city_id      String
+  pickup_lat   Float
+  pickup_lng   Float
+  drop_lat     Float
+  drop_lng     Float
+  status       DeliveryStatus @default(assigned)
+  assigned_at  DateTime       @default(now())
+  completed_at DateTime?
+
+  rider            Rider              @relation(fields: [rider_id], references: [id])
+  fleet            Fleet              @relation(fields: [fleet_id], references: [id])
+  city             City               @relation(fields: [city_id], references: [id])
+  routes           Route[]
+  route_selection  RouteSelection?
+  co2_calculation  Co2Calculation?
+  rewards          Reward[]
+
+  @@index([rider_id, assigned_at])
+  @@index([status])
+  @@map("deliveries")
+}
+
+model Route {
+  id               String  @id @default(uuid())
+  delivery_id      String
+  distance_km      Float
+  duration_min     Float
+  congestion_score Float
+  grs_score        Float
+  co2_kg           Float
+  is_selected      Boolean @default(false)
+
+  delivery         Delivery        @relation(fields: [delivery_id], references: [id])
+  route_selection  RouteSelection?
+
+  @@index([delivery_id])
+  @@map("routes")
+}
+
+model RouteSelection {
+  id          String   @id @default(uuid())
+  delivery_id String   @unique
+  route_id    String   @unique
+  selected_at DateTime @default(now())
+
+  delivery Delivery @relation(fields: [delivery_id], references: [id])
+  route    Route    @relation(fields: [route_id], references: [id])
+
+  @@map("route_selections")
+}
+
+model Co2Calculation {
+  id              String   @id @default(uuid())
+  delivery_id     String   @unique
+  baseline_co2_kg Float
+  actual_co2_kg   Float
+  co2_saved_kg    Float
+  calculated_at   DateTime @default(now())
+
+  delivery              Delivery              @relation(fields: [delivery_id], references: [id])
+  credit_batch_deliveries CreditBatchDelivery[]
+
+  @@map("co2_calculations")
+}
+
+model Reward {
+  id           String       @id @default(uuid())
+  delivery_id  String
+  rider_id     String
+  co2_saved_kg Float
+  amount_inr   Float
+  status       RewardStatus @default(pending)
+  paid_at      DateTime?
+
+  delivery           Delivery            @relation(fields: [delivery_id], references: [id])
+  rider              Rider               @relation(fields: [rider_id], references: [id])
+  wallet_transaction WalletTransaction?
+
+  @@index([rider_id, paid_at])
+  @@map("rewards")
+}
+
+model WalletTransaction {
+  id            String                @id @default(uuid())
+  rider_id      String
+  reward_id     String?               @unique
+  amount_inr    Float
+  type          WalletTransactionType
+  balance_after Float
+  created_at    DateTime              @default(now())
+
+  rider  Rider   @relation(fields: [rider_id], references: [id])
+  reward Reward? @relation(fields: [reward_id], references: [id])
+
+  @@index([rider_id, created_at])
+  @@map("wallet_transactions")
+}
+
+model CreditBatch {
+  id              String            @id @default(uuid())
+  city_id         String
+  period_start    DateTime
+  period_end      DateTime
+  total_kg_pooled Float
+  total_tonnes    Float
+  price_per_tonne Float
+  tonnes_available Float
+  status          CreditBatchStatus @default(pending_verification)
+
+  city                    City                  @relation(fields: [city_id], references: [id])
+  credit_batch_deliveries CreditBatchDelivery[]
+  verification_record     VerificationRecord?
+  purchases               Purchase[]
+
+  @@index([status])
+  @@map("credit_batches")
+}
+
+model CreditBatchDelivery {
+  id                 String @id @default(uuid())
+  credit_batch_id    String
+  co2_calculation_id String
+
+  credit_batch    CreditBatch    @relation(fields: [credit_batch_id], references: [id])
+  co2_calculation Co2Calculation @relation(fields: [co2_calculation_id], references: [id])
+
+  @@index([credit_batch_id])
+  @@map("credit_batch_deliveries")
+}
+
+model VerificationRecord {
+  id                String   @id @default(uuid())
+  credit_batch_id   String   @unique
+  method            String
+  verification_hash String
+  rider_count       Int
+  delivery_count    Int
+  verified_at       DateTime @default(now())
+
+  credit_batch CreditBatch @relation(fields: [credit_batch_id], references: [id])
+
+  @@map("verification_records")
+}
+
+model CorporateBuyer {
+  id              String @id @default(uuid())
+  user_id         String @unique
+  company_name    String
+  billing_contact String
+
+  user      User       @relation(fields: [user_id], references: [id])
+  purchases Purchase[]
+
+  @@map("corporate_buyers")
+}
+
+model Purchase {
+  id              String         @id @default(uuid())
+  buyer_id        String
+  credit_batch_id String
+  tonnes_purchased Float
+  price_per_tonne Float
+  total_amount_inr Float
+  status          PurchaseStatus @default(completed)
+  purchased_at    DateTime       @default(now())
+
+  buyer        CorporateBuyer @relation(fields: [buyer_id], references: [id])
+  credit_batch CreditBatch    @relation(fields: [credit_batch_id], references: [id])
+  certificate  Certificate?
+
+  @@index([buyer_id, purchased_at])
+  @@map("purchases")
+}
+
+model Certificate {
+  id                String   @id @default(uuid())
+  purchase_id       String   @unique
+  pdf_url           String
+  verification_hash String
+  issued_at         DateTime @default(now())
+
+  purchase Purchase @relation(fields: [purchase_id], references: [id])
+
+  @@map("certificates")
+}
