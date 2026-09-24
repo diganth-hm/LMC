@@ -1,0 +1,13 @@
+{
+  "name": "lastmile-carbon",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:rider": "npm --prefix apps/rider run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "build:rider": "npm --prefix apps/rider run build"
+  }
+}
