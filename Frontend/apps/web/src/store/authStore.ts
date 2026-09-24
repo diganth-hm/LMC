@@ -23,18 +23,29 @@ const defaultPlatformUser: User = {
 
 // Try to restore session from localStorage
 const storedToken = localStorage.getItem('lmc_auth_token');
+const storedUserRaw = localStorage.getItem('lmc_auth_user');
+let storedUser: User | null = null;
+if (storedUserRaw) {
+  try {
+    storedUser = JSON.parse(storedUserRaw);
+  } catch {
+    storedUser = null;
+  }
+}
 
 export const useAuthStore = create<AuthState>((set) => ({
-  // In mock mode, start pre-authenticated; in real mode, require actual login
-  user: USE_MOCKS ? defaultPlatformUser : (storedToken ? null : null),
+  // In mock mode, start pre-authenticated; in real mode, require actual login and restore session
+  user: USE_MOCKS ? defaultPlatformUser : storedUser,
   token: USE_MOCKS ? 'mock-jwt-token-12345' : storedToken,
   isAuthenticated: USE_MOCKS ? true : Boolean(storedToken),
   login: (user, token) => {
     localStorage.setItem('lmc_auth_token', token);
+    localStorage.setItem('lmc_auth_user', JSON.stringify(user));
     set({ user, token, isAuthenticated: true });
   },
   logout: () => {
     localStorage.removeItem('lmc_auth_token');
+    localStorage.removeItem('lmc_auth_user');
     set({ user: null, token: null, isAuthenticated: false });
   },
   switchRole: (role) => {

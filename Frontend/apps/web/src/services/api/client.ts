@@ -43,9 +43,10 @@ apiClient.interceptors.response.use(
         code: body?.error?.code || `HTTP_${error.response.status}`,
       };
 
-      // On 401, clear stored token and redirect to login
+      // On 401, clear stored token and user and redirect to login
       if (error.response.status === 401) {
         localStorage.removeItem('lmc_auth_token');
+        localStorage.removeItem('lmc_auth_user');
       }
     } else if (error.request) {
       normalizedError = {

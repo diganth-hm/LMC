@@ -25,6 +25,9 @@ import { CertificateView } from './pages/buyer/Certificate';
 import { ImpactSummary } from './pages/buyer/ImpactSummary';
 import { BuyerSettings } from './pages/buyer/BuyerSettings';
 
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { useAuthStore } from './store/authStore';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -35,6 +38,15 @@ const queryClient = new QueryClient({
   },
 });
 
+const RootRedirect = () => {
+  const { isAuthenticated, token, user } = useAuthStore();
+  if (!isAuthenticated || !token) {
+    return <Navigate to="/login" replace />;
+  }
+  const target = user?.role === 'corporate_buyer' ? '/buyer' : '/platform';
+  return <Navigate to={target} replace />;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -44,7 +56,14 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           {/* Platform Dashboard */}
-          <Route path="/platform" element={<PlatformLayout />}>
+          <Route
+            path="/platform"
+            element={
+              <ProtectedRoute allowedRoles={['platform_admin']}>
+                <PlatformLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<DashboardOverview />} />
             <Route path="fleet-analytics" element={<FleetAnalytics />} />
             <Route path="emissions" element={<Emissions />} />
@@ -55,7 +74,14 @@ function App() {
           </Route>
 
           {/* Buyer Portal */}
-          <Route path="/buyer" element={<BuyerLayout />}>
+          <Route
+            path="/buyer"
+            element={
+              <ProtectedRoute allowedRoles={['corporate_buyer']}>
+                <BuyerLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<BuyerDashboard />} />
             <Route path="inventory" element={<CreditInventory />} />
             <Route path="inventory/:batchId" element={<CreditBatchDetail />} />
@@ -69,8 +95,8 @@ function App() {
           </Route>
 
           {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/platform" replace />} />
-          <Route path="*" element={<Navigate to="/platform" replace />} />
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="*" element={<RootRedirect />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
