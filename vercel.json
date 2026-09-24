@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npm --prefix Frontend/apps/web run build",
+  "outputDirectory": "Frontend/apps/web/dist"
+}
