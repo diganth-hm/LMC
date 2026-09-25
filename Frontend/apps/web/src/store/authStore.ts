@@ -10,7 +10,7 @@ interface AuthState {
   switchRole: (role: UserRole) => void;
 }
 
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 
 const defaultPlatformUser: User = {
   id: 'usr-platform-01',

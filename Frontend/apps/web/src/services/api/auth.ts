@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import { AuthResponse, User } from '../../types';
 
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 
 export const authService = {
   login: async (email: string, password: string, role?: 'platform_admin' | 'corporate_buyer'): Promise<AuthResponse> => {

@@ -5,10 +5,8 @@ import { Button } from '../../components/ui/Button';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/api/auth';
 
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
-
 export const Login: React.FC = () => {
-  const { login, switchRole } = useAuthStore();
+  const { login } = useAuthStore();
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
@@ -18,35 +16,7 @@ export const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // ── Mock mode: quick-login buttons ──
-  const handlePlatformLogin = async () => {
-    if (USE_MOCKS) {
-      switchRole('platform_admin');
-      login(
-        { id: 'usr-platform-01', name: 'Swiggy Ops Admin', email: 'ops@swiggy.in', role: 'platform_admin', companyName: 'Swiggy' },
-        'mock-jwt-token-12345'
-      );
-      navigate('/platform');
-      return;
-    }
-    await handleRealLogin('admin@lastmilecarbon.org', 'admin123', '/platform');
-  };
-
-  const handleBuyerLogin = async () => {
-    if (USE_MOCKS) {
-      switchRole('corporate_buyer');
-      login(
-        { id: 'usr-buyer-01', name: 'Manipal ESG Lead', email: 'esg@manipal.edu', role: 'corporate_buyer', companyName: 'Manipal Group ESG Solutions' },
-        'mock-jwt-token-67890'
-      );
-      navigate('/buyer');
-      return;
-    }
-    await handleRealLogin('esg@manipal.edu', 'buyer123', '/buyer');
-  };
-
-  // ── Real mode: email + password login/signup form ──
-  const handleRealLogin = async (loginEmail: string, loginPassword: string, fallbackRedirect: string) => {
+  const handleRealLogin = async (loginEmail: string, loginPassword: string) => {
     setIsLoading(true);
     setErrorMsg('');
     try {
@@ -56,7 +26,7 @@ export const Login: React.FC = () => {
       navigate(target);
     } catch (err: unknown) {
       const apiErr = err as { message?: string };
-      setErrorMsg(apiErr?.message || 'Login failed. Check credentials.');
+      setErrorMsg(apiErr?.message || 'Login failed. Invalid email or password.');
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +42,7 @@ export const Login: React.FC = () => {
       navigate(target);
     } catch (err: unknown) {
       const apiErr = err as { message?: string };
-      setErrorMsg(apiErr?.message || 'Sign up failed. Try again.');
+      setErrorMsg(apiErr?.message || 'Sign up failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +57,7 @@ export const Login: React.FC = () => {
     if (isSignUp) {
       await handleRealSignup();
     } else {
-      await handleRealLogin(email, password, '/platform');
+      await handleRealLogin(email, password);
     }
   };
 
@@ -100,7 +70,7 @@ export const Login: React.FC = () => {
             <Leaf className="w-9 h-9 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">LastMile Carbon</h1>
-          <p className="text-sm text-gray-500 mt-1">Verified last-mile carbon credits</p>
+          <p className="text-sm text-gray-500 mt-1">Verified last-mile carbon credit platform</p>
         </div>
 
         {/* Error message */}
@@ -129,8 +99,8 @@ export const Login: React.FC = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleFormSubmit} className="bg-white rounded-b-lg border border-gray-200 border-t-0 p-6 mb-4 space-y-4">
-          <h3 className="font-semibold text-gray-900">{isSignUp ? 'Create a new account' : 'Sign in with credentials'}</h3>
+        <form onSubmit={handleFormSubmit} className="bg-white rounded-b-lg border border-gray-200 p-6 shadow-sm space-y-4">
+          <h3 className="font-semibold text-gray-900 text-base">{isSignUp ? 'Create a new account' : 'Sign in to your account'}</h3>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
@@ -162,6 +132,7 @@ export const Login: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Company / Organization Name</label>
                 <input
                   type="text"
+                  required
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40"
@@ -183,45 +154,10 @@ export const Login: React.FC = () => {
             </>
           )}
 
-          <Button variant="primary" themeAccent={role === 'corporate_buyer' ? 'coral' : 'purple'} className="w-full" disabled={isLoading}>
+          <Button variant="primary" themeAccent={role === 'corporate_buyer' ? 'coral' : 'purple'} className="w-full mt-2" disabled={isLoading}>
             {isLoading ? (isSignUp ? 'Creating Account…' : 'Signing in…') : (isSignUp ? 'Register & Sign In' : 'Sign In')}
           </Button>
         </form>
-
-        {/* Quick demo login cards */}
-        <div className="space-y-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-9 h-9 rounded-md bg-[#F3F0F9] flex items-center justify-center">
-                <span className="text-base">📊</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-sm">Demo Platform Admin</h3>
-                <p className="text-xs text-gray-500">Fleet management & sustainability ops</p>
-              </div>
-            </div>
-            <Button variant="primary" themeAccent="purple" className="w-full text-xs py-2" onClick={handlePlatformLogin} disabled={isLoading}>
-              {isLoading ? 'Signing in…' : 'Demo Sign in as Platform Admin'}
-            </Button>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-9 h-9 rounded-md bg-[#FDF2EE] flex items-center justify-center">
-                <span className="text-base">🏢</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-sm">Demo Corporate Buyer</h3>
-                <p className="text-xs text-gray-500">Carbon credit procurement & ESG</p>
-              </div>
-            </div>
-            <Button variant="primary" themeAccent="coral" className="w-full text-xs py-2" onClick={handleBuyerLogin} disabled={isLoading}>
-              {isLoading ? 'Signing in…' : 'Demo Sign in as Corporate Buyer'}
-            </Button>
-          </div>
-        </div>
-
-        <p className="text-center text-xs text-gray-400 mt-6">{USE_MOCKS ? 'Demo environment · Mock data enabled' : 'Connected to live backend'}</p>
       </div>
     </div>
   );
