@@ -21,10 +21,12 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 15_000, retry: 1, refetchOnWindowFocus: false } },
 });
 
+const basename = typeof window !== 'undefined' && window.location.pathname.startsWith('/rider') ? '/rider' : '/';
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <div className="max-w-[430px] mx-auto min-h-screen bg-[#FBFAF7] relative shadow-2xl">
           <Routes>
             <Route path="/login" element={<Login />} />
