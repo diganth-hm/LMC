@@ -3,10 +3,38 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
   body {
-    font-family: 'Inter', sans-serif;
-    background-color: #FBFAF7;
-    color: #1F1E1B;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    background-color: #F7F7F4;
+    color: #101815;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    letter-spacing: -0.011em;
+  }
+  /* Consistent, accessible keyboard focus */
+  :focus-visible {
+    outline: 2px solid #0F6E56;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  /* Numeric data aligns cleanly in tables and KPIs */
+  th, td, .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Recharts tooltip shell shared by all charts */
+  .chart-tooltip {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px -10px rgb(16 24 21 / 0.18);
+    padding: 8px 12px;
+    font-size: 12px;
   }
 }
 
@@ -16,21 +44,61 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d6d3cc;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #b9b5ac;
 }
 
 @keyframes pulse-subtle {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.85; transform: scale(1.02); }
 }
-
 .animate-pulse-subtle {
   animation: pulse-subtle 2.5s infinite ease-in-out;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-pop-in {
+  animation: pop-in 0.22s ease-out both;
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-16px); }
+  to { transform: translateX(0); }
+}
+.animate-slide-in-left {
+  animation: slide-in-left 0.25s ease-out both;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
