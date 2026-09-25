@@ -35,8 +35,12 @@ apiClient.interceptors.response.use(
       };
       if (error.response.status === 401) {
         localStorage.removeItem('lmc_rider_token');
-        const isRiderSubpath = window.location.pathname.startsWith('/rider');
-        const targetLogin = isRiderSubpath ? '/rider/login' : '/login';
+        const pathname = window.location.pathname;
+        const targetLogin = pathname.startsWith('/login/rider')
+          ? '/login/rider'
+          : pathname.startsWith('/rider')
+          ? '/rider/login'
+          : '/login/rider';
         if (window.location.pathname !== targetLogin) {
           window.location.href = targetLogin;
         }

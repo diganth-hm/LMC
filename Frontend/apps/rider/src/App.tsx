@@ -30,6 +30,8 @@ function App() {
         <div className="max-w-[430px] mx-auto min-h-screen bg-[#FBFAF7] relative shadow-2xl">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/login/rider" element={<Login />} />
+            <Route path="/rider/login" element={<Login />} />
 
             {/* Tab screens */}
             <Route element={<TabLayout />}>

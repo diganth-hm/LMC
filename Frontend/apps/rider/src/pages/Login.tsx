@@ -39,11 +39,20 @@ export const Login: React.FC = () => {
     setLoading(true);
     setError('');
 
+    const navigateToHome = () => {
+      const isRiderSubpath = window.location.pathname.startsWith('/rider');
+      if (isRiderSubpath) {
+        navigate('/home');
+      } else {
+        window.location.href = '/rider/home';
+      }
+    };
+
     if (USE_MOCKS) {
       setTimeout(() => {
         if (otp.length >= 4) {
           localStorage.setItem('lmc_rider_token', 'mock-rider-token');
-          navigate('/home');
+          navigateToHome();
         } else {
           setError('Invalid OTP');
           setLoading(false);
@@ -57,7 +66,7 @@ export const Login: React.FC = () => {
       const res = await apiClient.post('/auth/rider/verify-otp', { phone, otp });
       const data = res.data;
       localStorage.setItem('lmc_rider_token', data?.token || '');
-      navigate('/home');
+      navigateToHome();
     } catch (err: unknown) {
       const apiErr = err as { message?: string };
       setError(apiErr?.message || 'Invalid OTP');

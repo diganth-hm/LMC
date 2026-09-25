@@ -3,6 +3,14 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/login/rider",
+      "destination": "/rider/index.html"
+    },
+    {
+      "source": "/login/rider/(.*)",
+      "destination": "/rider/index.html"
+    },
+    {
       "source": "/rider",
       "destination": "/rider/index.html"
     },
