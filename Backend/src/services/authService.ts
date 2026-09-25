@@ -125,6 +125,67 @@ export class AuthService {
   }
 
   /**
+   * Register a new user (platform admin or corporate buyer)
+   */
+  static async registerWithEmail(data: {
+    email: string;
+    password: string;
+    role: UserRole;
+    companyName?: string;
+  }) {
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) {
+      throw new Error('USER_EXISTS');
+    }
+
+    const password_hash = await bcrypt.hash(data.password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email: data.email,
+        password_hash,
+        role: data.role,
+      },
+    });
+
+    let companyName = data.companyName || '';
+
+    if (data.role === 'corporate_buyer') {
+      const buyer = await prisma.corporateBuyer.create({
+        data: {
+          user_id: user.id,
+          company_name: companyName || 'Corporate Buyer Org',
+          billing_contact: data.email,
+        },
+      });
+      companyName = buyer.company_name;
+    } else if (data.role === 'platform_admin') {
+      const fleet = await prisma.fleet.create({
+        data: {
+          platform_admin_user_id: user.id,
+          name: companyName || 'Fleet Admin Ops',
+          saas_rate_per_rider: 150,
+        },
+      });
+      companyName = fleet.name;
+    }
+
+    const payload: JwtPayload = { userId: user.id, role: user.role };
+    const expiry = user.role === 'platform_admin' ? env.JWT_ADMIN_EXPIRY : env.JWT_BUYER_EXPIRY;
+    const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: expiry as jwt.SignOptions['expiresIn'] });
+
+    return {
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        companyName,
+      },
+    };
+  }
+
+  /**
    * Get current authenticated user details
    */
   static async me(userId: string) {

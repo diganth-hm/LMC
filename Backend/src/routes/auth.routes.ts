@@ -13,6 +13,10 @@ router.post('/rider/verify-otp', AuthController.verifyRiderOtp);
 // /auth/login
 router.post('/login', AuthController.loginEmailPassword);
 
+// /auth/signup & /auth/register
+router.post('/signup', AuthController.registerEmailPassword);
+router.post('/register', AuthController.registerEmailPassword);
+
 // /auth/me
 router.get('/me', requireAuth, AuthController.me);
 

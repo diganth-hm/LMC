@@ -23,6 +23,22 @@ export const authService = {
     return res.data;
   },
 
+  signup: async (data: { email: string; password: string; role: 'platform_admin' | 'corporate_buyer'; companyName?: string }): Promise<AuthResponse> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 400));
+      const user: User = {
+        id: `usr-${Date.now()}`,
+        name: data.companyName || (data.role === 'platform_admin' ? 'Fleet Admin' : 'ESG Lead'),
+        email: data.email,
+        role: data.role,
+        companyName: data.companyName || 'New Company',
+      };
+      return { token: 'mock-jwt-token-12345', user };
+    }
+    const res = await apiClient.post<AuthResponse>('/auth/signup', data);
+    return res.data;
+  },
+
   getMe: async (): Promise<User> => {
     if (USE_MOCKS) {
       return {

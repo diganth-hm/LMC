@@ -46,6 +46,31 @@ export class AuthController {
     }
   }
 
+  static async registerEmailPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, password, role, companyName } = req.body;
+      if (!email || !password) {
+        sendError(res, 'INVALID_INPUT', 'Email and password are required', 400);
+        return;
+      }
+      const userRole = role === 'corporate_buyer' ? 'corporate_buyer' : 'platform_admin';
+      const result = await AuthService.registerWithEmail({
+        email,
+        password,
+        role: userRole,
+        companyName,
+      });
+      sendSuccess(res, result, 201);
+    } catch (err) {
+      const msg = (err as Error).message;
+      if (msg === 'USER_EXISTS') {
+        sendError(res, 'USER_EXISTS', 'An account with this email already exists', 400);
+      } else {
+        sendError(res, 'REGISTRATION_FAILED', msg, 400);
+      }
+    }
+  }
+
   static async me(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
