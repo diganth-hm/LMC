@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "prisma generate && tsc",
-    "start": "prisma db push --accept-data-loss && ts-node seed/seed.ts && node dist/server.js",
+    "start": "node dist/server.js",
     "seed": "ts-node seed/seed.ts",
     "test": "jest --config jest.config.js",
     "prisma:generate": "prisma generate",
