@@ -1,7 +1,15 @@
 {
-  "buildCommand": "npm --prefix apps/web run build",
-  "outputDirectory": "apps/web/dist",
+  "buildCommand": "npm --prefix apps/web run build && npm --prefix apps/rider run build && mkdir -p dist && cp -r apps/web/dist/* dist/ && mkdir -p dist/rider && cp -r apps/rider/dist/* dist/rider/",
+  "outputDirectory": "dist",
   "rewrites": [
+    {
+      "source": "/rider",
+      "destination": "/rider/index.html"
+    },
+    {
+      "source": "/rider/(.*)",
+      "destination": "/rider/index.html"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

@@ -1,7 +1,15 @@
 {
-  "buildCommand": "node -e \"const fs = require('fs'); const cp = require('child_process'); const p = fs.existsSync('apps/web') ? 'apps/web' : 'Frontend/apps/web'; cp.execSync('npm --prefix ' + p + ' run build', {stdio: 'inherit'}); if (p.startsWith('Frontend/')) fs.cpSync('Frontend/apps/web/dist', 'dist', {recursive: true});\"",
+  "buildCommand": "npm run build --prefix Frontend/apps/web && npm run build --prefix Frontend/apps/rider && mkdir -p dist && cp -r Frontend/apps/web/dist/* dist/ && mkdir -p dist/rider && cp -r Frontend/apps/rider/dist/* dist/rider/",
   "outputDirectory": "dist",
   "rewrites": [
+    {
+      "source": "/rider",
+      "destination": "/rider/index.html"
+    },
+    {
+      "source": "/rider/(.*)",
+      "destination": "/rider/index.html"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
