@@ -13,12 +13,12 @@ interface EmptyStateProps {
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description, actionLabel, onAction, themeAccent = 'teal' }) => {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-        {icon || <Leaf className="w-8 h-8 text-gray-400" />}
+    <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-up">
+      <div className="w-16 h-16 rounded-full bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center mb-4 text-gray-400">
+        {icon || <Leaf className="w-7 h-7" />}
       </div>
-      <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
-      {description && <p className="text-sm text-gray-500 mb-5 max-w-sm">{description}</p>}
+      <h3 className="text-base font-semibold text-gray-900 mb-1">{title}</h3>
+      {description && <p className="text-sm text-gray-500 mb-5 max-w-sm leading-relaxed">{description}</p>}
       {actionLabel && onAction && (
         <Button variant="primary" themeAccent={themeAccent} onClick={onAction}>
           {actionLabel}

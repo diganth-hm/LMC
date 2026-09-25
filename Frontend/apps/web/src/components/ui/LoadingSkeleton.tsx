@@ -7,7 +7,7 @@ interface LoadingSkeletonProps {
 }
 
 const Shimmer: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse bg-gray-200 rounded-md ${className}`} />
+  <div className={`animate-pulse bg-gray-200/70 rounded-lg ${className}`} />
 );
 
 export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ variant = 'card', count = 1, className = '' }) => {
@@ -17,7 +17,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ variant = 'car
     return (
       <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ${className}`}>
         {items.map((_, i) => (
-          <div key={i} className="bg-white rounded-md border border-gray-200 p-5 space-y-3">
+          <div key={i} className="bg-white rounded-lg border border-gray-200/80 p-5 space-y-3 shadow-xs">
             <Shimmer className="h-3 w-20" />
             <Shimmer className="h-8 w-28" />
             <Shimmer className="h-3 w-16" />
@@ -31,7 +31,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ variant = 'car
     return (
       <div className={`space-y-3 ${className}`}>
         {items.map((_, i) => (
-          <div key={i} className="flex items-center gap-4 p-4 bg-white rounded-md border border-gray-100">
+          <div key={i} className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-100 shadow-xs">
             <Shimmer className="h-10 w-10 rounded-full shrink-0" />
             <div className="flex-1 space-y-2">
               <Shimmer className="h-3 w-40" />
@@ -46,7 +46,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ variant = 'car
 
   if (variant === 'chart') {
     return (
-      <div className={`bg-white rounded-md border border-gray-200 p-6 ${className}`}>
+      <div className={`bg-white rounded-lg border border-gray-200/80 p-6 shadow-xs ${className}`}>
         <Shimmer className="h-4 w-32 mb-4" />
         <Shimmer className="h-64 w-full" />
       </div>

@@ -43,13 +43,14 @@ export function DataTable<T extends object>({
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`text-left py-3 px-4 text-[12px] font-medium uppercase tracking-wider text-gray-500 ${col.sortable ? 'cursor-pointer select-none hover:text-gray-700' : ''} ${col.className || ''}`}
+                aria-sort={col.sortable && sortKey === col.key ? (sortDir === 'desc' ? 'descending' : 'ascending') : undefined}
+                className={`text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wider text-gray-400 whitespace-nowrap ${col.sortable ? 'cursor-pointer select-none hover:text-gray-700' : ''} ${col.className || ''}`}
                 onClick={() => col.sortable && onSort?.(col.key)}
               >
                 <span className="inline-flex items-center gap-1">
                   {col.header}
                   {col.sortable && sortKey === col.key && (
-                    <svg className={`w-3 h-3 transition-transform ${sortDir === 'desc' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className={`w-3 h-3 transition-transform ${sortDir === 'desc' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                     </svg>
                   )}
@@ -62,7 +63,7 @@ export function DataTable<T extends object>({
           {data.map((item, idx) => (
             <tr
               key={idx}
-              className={`border-b border-gray-100 transition-colors ${idx % 2 === 1 ? 'bg-gray-50/50' : ''} ${onRowClick ? 'cursor-pointer hover:bg-gray-100/70' : ''}`}
+              className={`border-b border-gray-100 last:border-0 transition-colors ${onRowClick ? 'cursor-pointer hover:bg-brand-teal-soft/50' : 'hover:bg-gray-50'}`}
               onClick={() => onRowClick?.(item)}
             >
               {columns.map((col) => (
