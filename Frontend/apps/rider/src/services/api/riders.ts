@@ -24,6 +24,13 @@ export const riderService = {
     };
   },
 
+  updateVehicle: async (vehicleType: string): Promise<void> => {
+    if (USE_MOCKS) {
+      return;
+    }
+    await apiClient.patch('/riders/me/vehicle', { vehicleType });
+  },
+
   getStats: async (): Promise<RiderStats> => {
     if (USE_MOCKS) {
       await new Promise(r => setTimeout(r, 200));

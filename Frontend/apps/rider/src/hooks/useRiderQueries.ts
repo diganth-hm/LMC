@@ -4,6 +4,15 @@ import { riderService } from '../services/api/riders';
 export function useRiderProfile() {
   return useQuery({ queryKey: ['rider', 'profile'], queryFn: riderService.getProfile });
 }
+export function useUpdateVehicle() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (vehicleType: string) => riderService.updateVehicle(vehicleType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rider', 'profile'] });
+    },
+  });
+}
 export function useRiderStats() {
   return useQuery({ queryKey: ['rider', 'stats'], queryFn: riderService.getStats, staleTime: 15_000 });
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRiderProfile } from '../hooks/useRiderQueries';
+import { useRiderProfile, useUpdateVehicle } from '../hooks/useRiderQueries';
 import { ChevronRight, LogOut, Bell, CreditCard, HelpCircle, Award, Bike, Zap, Car } from 'lucide-react';
 
 const vehicleIcons: Record<string, React.ReactNode> = {
@@ -13,17 +13,27 @@ const vehicleIcons: Record<string, React.ReactNode> = {
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { data: profile } = useRiderProfile();
+  const updateVehicleMutation = useUpdateVehicle();
+
+  const handleLogout = () => {
+    localStorage.removeItem('lmc_rider_token');
+    navigate('/login');
+  };
+
+  const handleVehicleChange = (type: string) => {
+    updateVehicleMutation.mutate(type);
+  };
 
   return (
     <div className="min-h-screen bg-[#FBFAF7] pb-20">
       {/* Profile header */}
       <div className="bg-[#0F6E56] px-5 pt-12 pb-8 rounded-b-[24px]">
         <div className="flex items-center gap-4">
-          <img src={profile?.avatarUrl || ''} alt={profile?.name} className="w-16 h-16 rounded-full border-2 border-white/30 object-cover" />
+          <img src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'} alt={profile?.name} className="w-16 h-16 rounded-full border-2 border-white/30 object-cover" />
           <div>
             <h1 className="text-lg font-bold text-white">{profile?.name || 'Rider'}</h1>
             <p className="text-sm text-white/70">{profile?.phone}</p>
-            <p className="text-xs text-white/50 mt-0.5">Member since {profile?.memberSince}</p>
+            <p className="text-xs text-white/50 mt-0.5">Member since {profile?.memberSince || '2026'}</p>
           </div>
         </div>
       </div>
@@ -33,7 +43,11 @@ export const Profile: React.FC = () => {
         <h2 className="text-sm font-semibold text-gray-800 mb-3">Vehicle Type</h2>
         <div className="grid grid-cols-2 gap-2">
           {(['Petrol 2W', 'EV 2W', 'CNG 3W', 'Diesel 3W'] as const).map(type => (
-            <div key={type} className={`p-3 rounded-md border-2 flex items-center gap-2 cursor-pointer transition-all ${profile?.vehicleType === type ? 'border-[#0F6E56] bg-[#E1F5EE]' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+            <div
+              key={type}
+              onClick={() => handleVehicleChange(type)}
+              className={`p-3 rounded-md border-2 flex items-center gap-2 cursor-pointer transition-all ${profile?.vehicleType === type ? 'border-[#0F6E56] bg-[#E1F5EE]' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+            >
               {vehicleIcons[type]}
               <span className="text-xs font-medium text-gray-700">{type}</span>
             </div>
@@ -63,7 +77,7 @@ export const Profile: React.FC = () => {
       </div>
 
       <div className="px-5 mt-6">
-        <button className="w-full py-3 border border-red-200 text-red-500 font-medium rounded-md text-sm hover:bg-red-50 transition-colors flex items-center justify-center gap-2">
+        <button onClick={handleLogout} className="w-full py-3 border border-red-200 text-red-500 font-medium rounded-md text-sm hover:bg-red-50 transition-colors flex items-center justify-center gap-2">
           <LogOut className="w-4 h-4" /> Logout
         </button>
       </div>
