@@ -12,7 +12,7 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [role, setRole] = useState<'platform_admin' | 'corporate_buyer'>('platform_admin');
+  const [role] = useState<'corporate_buyer'>('corporate_buyer');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -36,10 +36,9 @@ export const Login: React.FC = () => {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const result = await authService.signup({ email, password, role, companyName });
+      const result = await authService.signup({ email, password, role: 'corporate_buyer', companyName });
       login(result.user, result.token);
-      const target = result.user.role === 'corporate_buyer' ? '/buyer' : '/platform';
-      navigate(target);
+      navigate('/buyer');
     } catch (err: unknown) {
       const apiErr = err as { message?: string };
       setErrorMsg(apiErr?.message || 'Sign up failed. Please try again.');
@@ -94,13 +93,13 @@ export const Login: React.FC = () => {
             onClick={() => { setIsSignUp(true); setErrorMsg(''); }}
             className={`flex-1 py-3 text-sm font-semibold text-center border-b-2 ${isSignUp ? 'border-[#0F6E56] text-[#0F6E56]' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
           >
-            Create Account
+            Create Buyer Account
           </button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleFormSubmit} className="bg-white rounded-b-lg border border-gray-200 p-6 shadow-sm space-y-4">
-          <h3 className="font-semibold text-gray-900 text-base">{isSignUp ? 'Create a new account' : 'Sign in to your account'}</h3>
+          <h3 className="font-semibold text-gray-900 text-base">{isSignUp ? 'Create a Corporate Buyer account' : 'Sign in to your account'}</h3>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
@@ -136,25 +135,21 @@ export const Login: React.FC = () => {
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40"
-                  placeholder="e.g. Swiggy or Manipal Group"
+                  placeholder="e.g. Manipal Group or Infosys ESG"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Account Role</label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as 'platform_admin' | 'corporate_buyer')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40 bg-white"
-                >
-                  <option value="platform_admin">Platform Admin (Fleet & Operations)</option>
-                  <option value="corporate_buyer">Corporate Buyer (ESG & Carbon Credits)</option>
-                </select>
+                <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-md p-2.5 font-medium flex items-center justify-between">
+                  <span>🏢 Corporate Buyer (Carbon Credit Procurement)</span>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">Standard</span>
+                </div>
               </div>
             </>
           )}
 
-          <Button variant="primary" themeAccent={role === 'corporate_buyer' ? 'coral' : 'purple'} className="w-full mt-2" disabled={isLoading}>
+          <Button variant="primary" themeAccent={isSignUp ? 'coral' : 'purple'} className="w-full mt-2" disabled={isLoading}>
             {isLoading ? (isSignUp ? 'Creating Account…' : 'Signing in…') : (isSignUp ? 'Register & Sign In' : 'Sign In')}
           </Button>
         </form>

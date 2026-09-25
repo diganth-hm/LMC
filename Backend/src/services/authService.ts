@@ -193,6 +193,10 @@ export class AuthService {
     role: UserRole;
     companyName?: string;
   }) {
+    if (data.role === 'platform_admin') {
+      throw new Error('ADMIN_REGISTRATION_DISABLED');
+    }
+
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
     if (existing) {
       throw new Error('USER_EXISTS');
@@ -210,25 +214,14 @@ export class AuthService {
 
     let companyName = data.companyName || '';
 
-    if (data.role === 'corporate_buyer') {
-      const buyer = await prisma.corporateBuyer.create({
-        data: {
-          user_id: user.id,
-          company_name: companyName || 'Corporate Buyer Org',
-          billing_contact: data.email,
-        },
-      });
-      companyName = buyer.company_name;
-    } else if (data.role === 'platform_admin') {
-      const fleet = await prisma.fleet.create({
-        data: {
-          platform_admin_user_id: user.id,
-          name: companyName || 'Fleet Admin Ops',
-          saas_rate_per_rider: 150,
-        },
-      });
-      companyName = fleet.name;
-    }
+    const buyer = await prisma.corporateBuyer.create({
+      data: {
+        user_id: user.id,
+        company_name: companyName || 'Corporate Buyer Org',
+        billing_contact: data.email,
+      },
+    });
+    companyName = buyer.company_name;
 
     const payload: JwtPayload = { userId: user.id, role: user.role };
     const expiry = user.role === 'platform_admin' ? env.JWT_ADMIN_EXPIRY : env.JWT_BUYER_EXPIRY;
