@@ -2,7 +2,7 @@ import { apiClient } from './client';
 import { RiderProfile, RiderStats, DeliveryAssignment, RouteOption, DeliveryCompletion, WalletTransaction, CO2HistoryPoint, RouteHistoryItem } from '../../types';
 import { mockRiderProfile, mockRiderStats, mockDeliveryAssignment, mockRouteOptions, mockDeliveryCompletion, mockWalletTransactions, mockCO2History, mockRouteHistory, mockWalletBalance, mockWeeklyEarnings } from './mockData';
 
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 
 export const riderService = {
   getProfile: async (): Promise<RiderProfile> => {
