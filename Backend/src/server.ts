@@ -2,12 +2,12 @@ import app from './app';
 import { env } from './config/env';
 
 const server = app.listen(env.PORT, () => {
-  console.log(`🚀 LastMile Carbon Backend running on http://localhost:${env.PORT}`);
+  console.log(`🚀 LastMile Carbon Backend running on port ${env.PORT}`);
   console.log(`🌍 Environment: ${env.NODE_ENV}`);
 
   // Safely auto-push schema & seed if external DATABASE_URL is configured
   const dbUrl = process.env.DATABASE_URL || '';
-  if (dbUrl && !dbUrl.includes('localhost') && !dbUrl.includes('127.0.0.1')) {
+  if (dbUrl) {
     try {
       const { execSync } = require('child_process');
       console.log('🔄 Syncing database schema and seeding demo data...');

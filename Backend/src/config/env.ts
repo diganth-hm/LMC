@@ -13,7 +13,7 @@ const envSchema = z.object({
   MAPBOX_ACCESS_TOKEN: z.string().default(''),
   RAZORPAY_KEY_ID: z.string().default(''),
   RAZORPAY_KEY_SECRET: z.string().default(''),
-  ALLOWED_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5173,http://localhost:8081'),
+  ALLOWED_ORIGINS: z.string().default('https://lmc-beige.vercel.app,https://lastmilecarbon.vercel.app,https://lastmilecarbon.app,*'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   DEMO_OTP: z.string().default('1234'),
 });

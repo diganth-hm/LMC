@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { ApiError } from '../../types';
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const baseURL = import.meta.env.VITE_API_URL || 'https://lmc-f3vq.onrender.com/api';
 
 export const apiClient = axios.create({
   baseURL,
