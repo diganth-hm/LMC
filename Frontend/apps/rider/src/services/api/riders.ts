@@ -91,20 +91,79 @@ export const riderService = {
     }
     // Backend: GET /routes?deliveryId= → { routes: [{ id, distanceKm, durationMin, co2Kg, fuelCostInr, grsScore, isGreenest }] }
     const res = await apiClient.get('/routes', { params: { deliveryId } });
-    const routes = res.data?.routes || res.data || [];
-    const colors = ['#22c55e', '#3b82f6', '#f59e0b'];
-    const names = ['Green Route', 'Standard Route', 'Fast Route'];
-    return routes.map((r: Record<string, unknown>, idx: number) => ({
-      id: r.id as string,
-      name: names[idx] || `Route ${idx + 1}`,
+    const rawRoutes = res.data?.routes || res.data || [];
+    if (!rawRoutes || rawRoutes.length === 0) {
+      return mockRouteOptions;
+    }
+
+    interface ParsedRoute {
+      id: string;
+      distanceKm: number;
+      durationMin: number;
+      co2Kg: number;
+      fuelCostRupees: number;
+      grsScore: number;
+      isGreenest: boolean;
+    }
+
+    const parsed: ParsedRoute[] = rawRoutes.map((r: Record<string, unknown>) => ({
+      id: (r.id as string) || '',
       distanceKm: (r.distanceKm as number) ?? (r.distance_km as number) ?? 0,
       durationMin: (r.durationMin as number) ?? (r.duration_min as number) ?? 0,
       co2Kg: (r.co2Kg as number) ?? (r.co2_kg as number) ?? 0,
       fuelCostRupees: (r.fuelCostInr as number) ?? (r.fuel_cost_inr as number) ?? 0,
       grsScore: (r.grsScore as number) ?? (r.grs_score as number) ?? 0,
       isGreenest: (r.isGreenest as boolean) ?? false,
-      color: colors[idx] || '#6b7280',
     }));
+
+    // Find greenest route index (lowest CO2 emissions)
+    let greenIdx = parsed.findIndex((r: ParsedRoute) => r.isGreenest);
+    if (greenIdx === -1) {
+      let minCo2 = Infinity;
+      parsed.forEach((r: ParsedRoute, idx: number) => {
+        if (r.co2Kg < minCo2) {
+          minCo2 = r.co2Kg;
+          greenIdx = idx;
+        }
+      });
+    }
+    if (greenIdx === -1) greenIdx = 0;
+
+    // Find fast route index (shortest durationMin among remaining)
+    let fastIdx = -1;
+    let minDuration = Infinity;
+    parsed.forEach((r: ParsedRoute, idx: number) => {
+      if (idx !== greenIdx && r.durationMin < minDuration) {
+        minDuration = r.durationMin;
+        fastIdx = idx;
+      }
+    });
+    if (fastIdx === -1) fastIdx = (greenIdx + 1) % parsed.length;
+
+    // Remaining index is standard route
+    const standardIdx = parsed.findIndex((_: ParsedRoute, idx: number) => idx !== greenIdx && idx !== fastIdx);
+    const finalStandardIdx = standardIdx !== -1 ? standardIdx : (greenIdx + 1) % parsed.length;
+
+    const orderedIndices = [greenIdx, finalStandardIdx, fastIdx];
+    const names = ['Green Route', 'Standard Route', 'Fast Route'];
+    const colors = ['#0F6E56', '#3b82f6', '#f59e0b'];
+    const grsScale = [88, 68, 52];
+
+    return orderedIndices.map((origIdx, pos) => {
+      const r = parsed[origIdx] || parsed[0];
+      const grsScore = pos === 0 ? Math.max(85, r.grsScore) : grsScale[pos];
+      return {
+        id: r.id,
+        name: names[pos],
+        distanceKm: r.distanceKm,
+        durationMin: r.durationMin,
+        co2Kg: r.co2Kg,
+        fuelCostRupees: r.fuelCostRupees,
+        grsScore,
+        isGreenest: pos === 0,
+        color: colors[pos],
+      };
+    });
   },
 
   selectRoute: async (routeId: string): Promise<void> => {

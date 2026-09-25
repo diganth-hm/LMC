@@ -33,9 +33,9 @@ export const mockDeliveryAssignment: DeliveryAssignment = {
 };
 
 export const mockRouteOptions: RouteOption[] = [
-  { id: 'route-a', name: 'Route A — Hampankatta Main Rd', distanceKm: 4.2, durationMin: 14, co2Kg: 1.2, fuelCostRupees: 18, grsScore: 45, isGreenest: false, color: '#ef4444' },
-  { id: 'route-b', name: 'Route B — KS Rao Road', distanceKm: 4.8, durationMin: 16, co2Kg: 0.9, fuelCostRupees: 15, grsScore: 62, isGreenest: false, color: '#f59e0b' },
-  { id: 'route-c', name: 'Route C — Lalbagh Back Lane', distanceKm: 5.6, durationMin: 19, co2Kg: 0.6, fuelCostRupees: 12, grsScore: 29, isGreenest: true, color: '#0F6E56' },
+  { id: 'route-a', name: 'Green Route', distanceKm: 2.72, durationMin: 6.5, co2Kg: 0.03, fuelCostRupees: 1.35, grsScore: 88, isGreenest: true, color: '#0F6E56' },
+  { id: 'route-b', name: 'Standard Route', distanceKm: 3.37, durationMin: 11.2, co2Kg: 0.05, fuelCostRupees: 2.25, grsScore: 65, isGreenest: false, color: '#3b82f6' },
+  { id: 'route-c', name: 'Fast Route', distanceKm: 2.46, durationMin: 4.9, co2Kg: 0.04, fuelCostRupees: 1.80, grsScore: 52, isGreenest: false, color: '#f59e0b' },
 ];
 
 export const mockDeliveryCompletion: DeliveryCompletion = {

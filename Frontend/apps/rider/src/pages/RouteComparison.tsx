@@ -21,9 +21,15 @@ export const RouteComparison: React.FC = () => {
   const dropLat = 12.9341;
   const dropLng = 74.8760;
 
+  // Auto-select Green Route by default
+  React.useEffect(() => {
+    if (routes && routes.length > 0 && !selectedRoute) {
+      setSelectedRoute(routes[0]);
+    }
+  }, [routes, selectedRoute, setSelectedRoute]);
+
   // Convert routes into polyline data for MapComponent
   const polylineRoutes: RoutePolyline[] = (routes || []).map((r, idx) => {
-    // Generate curved coordinates between pickup and drop
     const offsetFactor = (idx - 1) * 0.008;
     const midLat = pickupLat + (dropLat - pickupLat) * 0.5 + offsetFactor;
     const midLng = pickupLng + (dropLng - pickupLng) * 0.5 - offsetFactor;
@@ -31,7 +37,7 @@ export const RouteComparison: React.FC = () => {
       id: r.id,
       name: r.name,
       color: r.color || (idx === 0 ? '#0F6E56' : idx === 1 ? '#3b82f6' : '#f59e0b'),
-      isGreenest: r.grsScore >= 75 || r.isGreenest,
+      isGreenest: Boolean(r.isGreenest),
       coordinates: [
         [pickupLat, pickupLng],
         [midLat, midLng],
@@ -42,7 +48,7 @@ export const RouteComparison: React.FC = () => {
 
   // Determine highest GRS route ID for badge
   const topGrsRouteId = (routes || []).reduce(
-    (maxId, r) => (r.grsScore > ((routes || []).find((x) => x.id === maxId)?.grsScore || 0) ? r.id : maxId),
+    (maxId, r) => (r.grsScore > ((routes || []).find((x) => x.id === maxId)?.grsScore || -1) ? r.id : maxId),
     routes?.[0]?.id || ''
   );
 
@@ -85,7 +91,7 @@ export const RouteComparison: React.FC = () => {
         ) : (
           <div className="space-y-3">
             {(routes || []).map(route => {
-              const isGreenestRoute = route.id === topGrsRouteId;
+              const isGreenestRoute = Boolean(route.isGreenest);
               return (
                 <button
                   key={route.id}

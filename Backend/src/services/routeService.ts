@@ -24,7 +24,7 @@ export class RouteService {
 
     // If routes already generated for this delivery, return them
     if (delivery.routes && delivery.routes.length > 0) {
-      const minGrs = Math.min(...delivery.routes.map((r) => r.grs_score));
+      const maxGrs = Math.max(...delivery.routes.map((r) => r.grs_score));
       return delivery.routes.map((r) => ({
         id: r.id,
         deliveryId: r.delivery_id,
@@ -35,7 +35,7 @@ export class RouteService {
         co2Kg: r.co2_kg,
         fuelCostInr: Math.round(r.co2_kg * 45 * 100) / 100, // estimated
         isSelected: r.is_selected,
-        isGreenest: r.grs_score === minGrs,
+        isGreenest: r.grs_score === maxGrs,
       }));
     }
 
@@ -70,7 +70,7 @@ export class RouteService {
       )
     );
 
-    const minGrs = Math.min(...createdRoutes.map((r) => r.grs_score));
+    const maxGrs = Math.max(...createdRoutes.map((r) => r.grs_score));
 
     return createdRoutes.map((r, idx) => ({
       id: r.id,
@@ -82,7 +82,7 @@ export class RouteService {
       co2Kg: r.co2_kg,
       fuelCostInr: scoredCandidates[idx].fuelCostInr,
       isSelected: r.is_selected,
-      isGreenest: r.grs_score === minGrs,
+      isGreenest: r.grs_score === maxGrs,
     }));
   }
 

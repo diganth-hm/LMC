@@ -82,24 +82,27 @@ export class EmissionsService {
       const congNorm = (cand.congestionScore / maxCong) * 100;
       const co2Norm = (cand.co2Kg / maxCo2) * 100;
 
-      const grsScore = Math.round(
+      // Raw penalty (0 to 100, higher = dirtier/more congested)
+      const penalty =
         distNorm * GRS_WEIGHTS.distance +
-          congNorm * GRS_WEIGHTS.congestion +
-          co2Norm * GRS_WEIGHTS.co2
-      );
+        congNorm * GRS_WEIGHTS.congestion +
+        co2Norm * GRS_WEIGHTS.co2;
+
+      // Green Route Score (1 to 100 where 100 = cleanest/greenest)
+      const grsScore = Math.min(100, Math.max(10, Math.round(100 - penalty + 15)));
 
       return {
         ...cand,
-        grsScore: Math.min(100, Math.max(1, grsScore)),
+        grsScore,
       };
     });
 
-    // Identify lowest GRS as greenest
-    const minGrs = Math.min(...scoredWithGrs.map((s) => s.grsScore));
+    // Identify highest GRS as greenest (100 = greenest)
+    const maxGrs = Math.max(...scoredWithGrs.map((s) => s.grsScore));
 
     return scoredWithGrs.map((item) => ({
       ...item,
-      isGreenest: item.grsScore === minGrs,
+      isGreenest: item.grsScore === maxGrs,
     }));
   }
 
@@ -115,9 +118,9 @@ export class EmissionsService {
       throw new Error('SELECTED_ROUTE_NOT_FOUND');
     }
 
-    // Baseline route is defined as the candidate route with highest GRS (least green / standard route)
+    // Baseline route is defined as the candidate route with highest CO2 / lowest GRS (least green)
     const baselineRoute = routes.reduce((prev, curr) =>
-      curr.grs_score > prev.grs_score ? curr : prev
+      curr.co2_kg > prev.co2_kg ? curr : prev
     , routes[0]);
 
     const baselineCo2Kg = Math.round(baselineRoute.co2_kg * 100) / 100;
