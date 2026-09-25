@@ -41,7 +41,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const riderMarkerRef = useRef<L.Marker | null>(null);
 
-  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';
+  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '***REMOVED***';
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -59,15 +59,20 @@ export const MapComponent: React.FC<MapComponentProps> = ({
 
     mapInstanceRef.current = map;
 
-    // Use Mapbox Streets tiles if token available, else OpenStreetMap fallback
-    const tileUrl = MAPBOX_TOKEN && !MAPBOX_TOKEN.includes('sample')
-      ? `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`
-      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    // Trigger invalidateSize to ensure tiles render across container bounds
+    const resizeTimer1 = setTimeout(() => map.invalidateSize(), 50);
+    const resizeTimer2 = setTimeout(() => map.invalidateSize(), 250);
+
+    const hasValidMapboxToken = MAPBOX_TOKEN && MAPBOX_TOKEN.startsWith('pk.') && !MAPBOX_TOKEN.includes('sample');
+    const tileUrl = hasValidMapboxToken
+      ? `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
+      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 
     L.tileLayer(tileUrl, {
       maxZoom: 19,
-      tileSize: 512,
-      zoomOffset: MAPBOX_TOKEN ? -1 : 0,
+      tileSize: hasValidMapboxToken ? 512 : 256,
+      zoomOffset: hasValidMapboxToken ? -1 : 0,
+      subdomains: 'abcd',
     }).addTo(map);
 
     // Custom HTML icons
@@ -176,6 +181,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     }
 
     return () => {
+      clearTimeout(resizeTimer1);
+      clearTimeout(resizeTimer2);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
