@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeliveryAssignment } from '../hooks/useRiderQueries';
 import { useDeliveryStore } from '../store/deliveryStore';
-import { MapPin, Navigation, ArrowLeft, Leaf } from 'lucide-react';
+import { MapPin, ArrowLeft, Leaf } from 'lucide-react';
+import { MapComponent } from '../components/MapComponent';
 
 export const DeliveryAssignment: React.FC = () => {
   const navigate = useNavigate();
@@ -16,23 +17,26 @@ export const DeliveryAssignment: React.FC = () => {
     }
   };
 
+  const pickupLat = 12.9141;
+  const pickupLng = 74.8560;
+  const dropLat = 12.9341;
+  const dropLng = 74.8760;
+
   return (
     <div className="min-h-screen bg-[#FBFAF7] flex flex-col">
-      <button onClick={() => navigate('/home')} className="flex items-center gap-1 text-sm text-gray-500 p-4">
-        <ArrowLeft className="w-4 h-4" /> Back
-      </button>
+      <div className="absolute top-3 left-3 z-30">
+        <button onClick={() => navigate('/home')} className="flex items-center gap-1 text-xs font-semibold bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow text-gray-700 hover:bg-white transition-colors">
+          <ArrowLeft className="w-3.5 h-3.5" /> Back
+        </button>
+      </div>
 
-      {/* Map placeholder */}
-      <div className="h-[40vh] bg-gradient-to-b from-[#E1F5EE] to-[#d0f0e4] flex items-center justify-center relative">
-        <div className="absolute top-6 left-6 flex flex-col gap-2">
-          <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-            <div className="w-2 h-2 rounded-full bg-[#0F6E56]" /> Pickup
-          </div>
-          <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 text-xs">
-            <div className="w-2 h-2 rounded-full bg-red-500" /> Drop
-          </div>
-        </div>
-        <Navigation className="w-12 h-12 text-[#0F6E56]/30" />
+      {/* Map component */}
+      <div className="h-[42vh] relative">
+        <MapComponent
+          pickup={{ lat: pickupLat, lng: pickupLng, name: assignment?.pickupName || 'Machali Kitchen' }}
+          drop={{ lat: dropLat, lng: dropLng, name: 'Customer Location' }}
+          className="h-full w-full"
+        />
       </div>
 
       {/* Delivery details card */}

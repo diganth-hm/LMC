@@ -105,4 +105,37 @@ export class RiderController {
       sendError(res, 'INTERNAL_ERROR', (err as Error).message, 500);
     }
   }
+
+  static async updatePayoutAccount(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        sendError(res, 'UNAUTHORIZED', 'Authentication required', 401);
+        return;
+      }
+
+      const { upiId } = req.body;
+      const upiRegex = /^[\w.-]+@[\w.-]+$/;
+
+      if (!upiId || !upiRegex.test(upiId)) {
+        sendError(res, 'INVALID_UPI_ID', 'Please enter a valid UPI ID (e.g. name@upi)', 400);
+        return;
+      }
+
+      const rider = await prisma.rider.findUnique({
+        where: { user_id: req.user.userId },
+      });
+
+      if (!rider) {
+        sendError(res, 'RIDER_NOT_FOUND', 'Rider profile not found', 404);
+        return;
+      }
+
+      sendSuccess(res, {
+        payoutAccount: upiId,
+        message: 'Payout UPI ID updated successfully',
+      });
+    } catch (err) {
+      sendError(res, 'INTERNAL_ERROR', (err as Error).message, 500);
+    }
+  }
 }

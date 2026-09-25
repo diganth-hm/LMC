@@ -14,4 +14,7 @@ router.get('/', WalletController.getWallet);
 // GET /wallet/transactions
 router.get('/transactions', WalletController.getTransactions);
 
+// POST /wallet/withdraw
+router.post('/withdraw', WalletController.withdraw);
+
 export default router;

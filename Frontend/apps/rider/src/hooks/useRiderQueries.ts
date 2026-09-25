@@ -13,6 +13,26 @@ export function useUpdateVehicle() {
     },
   });
 }
+export function useUpdatePayoutUpi() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (upiId: string) => riderService.updatePayoutUpi(upiId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rider', 'profile'] });
+    },
+  });
+}
+export function useWithdrawBonus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ amount, upiId }: { amount: number; upiId?: string }) => riderService.withdrawBonus(amount, upiId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rider', 'wallet-balance'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['rider', 'stats'] });
+    },
+  });
+}
 export function useRiderStats() {
   return useQuery({ queryKey: ['rider', 'stats'], queryFn: riderService.getStats, staleTime: 15_000 });
 }

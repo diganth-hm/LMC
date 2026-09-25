@@ -31,6 +31,22 @@ export const riderService = {
     await apiClient.patch('/riders/me/vehicle', { vehicleType });
   },
 
+  updatePayoutUpi: async (upiId: string): Promise<{ payoutAccount: string }> => {
+    if (USE_MOCKS) {
+      return { payoutAccount: upiId };
+    }
+    const res = await apiClient.patch('/riders/me/payout', { upiId });
+    return res.data || { payoutAccount: upiId };
+  },
+
+  withdrawBonus: async (amount: number, upiId?: string): Promise<{ payoutId: string; amountInr: number; newBalance: number }> => {
+    if (USE_MOCKS) {
+      return { payoutId: `pout_${Math.random().toString(36).slice(2, 8)}`, amountInr: amount, newBalance: 0 };
+    }
+    const res = await apiClient.post('/wallet/withdraw', { amount, upiId });
+    return res.data;
+  },
+
   getStats: async (): Promise<RiderStats> => {
     if (USE_MOCKS) {
       await new Promise(r => setTimeout(r, 200));

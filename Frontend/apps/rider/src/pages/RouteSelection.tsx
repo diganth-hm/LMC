@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeliveryStore } from '../store/deliveryStore';
 import { ArrowLeft, Leaf, MapPin, Clock, Fuel, DollarSign } from 'lucide-react';
+import { MapComponent } from '../components/MapComponent';
 
 export const RouteSelection: React.FC = () => {
   const navigate = useNavigate();
@@ -15,17 +16,44 @@ export const RouteSelection: React.FC = () => {
     navigate('/delivery/live-tracking');
   };
 
+  const pickupLat = 12.9141;
+  const pickupLng = 74.8560;
+  const dropLat = 12.9341;
+  const dropLng = 74.8760;
+
+  const polylineRoute = {
+    id: route.id,
+    name: route.name,
+    color: route.color || '#0F6E56',
+    coordinates: [
+      [pickupLat, pickupLng] as [number, number],
+      [pickupLat + 0.01, pickupLng + 0.01] as [number, number],
+      [dropLat, dropLng] as [number, number],
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-[#FBFAF7] flex flex-col">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm text-gray-500 p-4">
-        <ArrowLeft className="w-4 h-4" /> Back to route options
-      </button>
+      <div className="absolute top-3 left-3 z-30">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-xs font-semibold bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow text-gray-700 hover:bg-white transition-colors">
+          <ArrowLeft className="w-3.5 h-3.5" /> Back
+        </button>
+      </div>
 
       {/* Map with single route */}
-      <div className="h-[40vh] bg-gradient-to-b from-[#E1F5EE] to-[#c8ead9] flex items-center justify-center relative">
-        <div className="flex items-center gap-2 bg-white/90 px-3 py-1.5 rounded-full shadow text-sm font-medium" style={{ color: route.color }}>
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: route.color }} />
-          {route.name}
+      <div className="h-[40vh] relative">
+        <MapComponent
+          pickup={{ lat: pickupLat, lng: pickupLng, name: 'Pickup' }}
+          drop={{ lat: dropLat, lng: dropLng, name: 'Drop' }}
+          routes={[polylineRoute]}
+          selectedRouteId={route.id}
+          className="h-full w-full"
+        />
+        <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center pointer-events-none">
+          <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow text-xs font-bold" style={{ color: route.color }}>
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: route.color }} />
+            {route.name}
+          </div>
         </div>
       </div>
 

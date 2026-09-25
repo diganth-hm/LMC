@@ -32,6 +32,39 @@ export class WalletService {
   }
 
   /**
+   * Record a wallet withdrawal transaction (RazorpayX instant payout simulation)
+   */
+  static async withdrawWallet(riderId: string, amountInr: number, payoutUpi: string) {
+    const currentBalance = await this.getWalletBalance(riderId);
+    if (amountInr <= 0) {
+      throw new Error('INVALID_AMOUNT');
+    }
+    if (currentBalance < amountInr) {
+      throw new Error('INSUFFICIENT_FUNDS');
+    }
+    const newBalance = Math.round((currentBalance - amountInr) * 100) / 100;
+
+    const tx = await prisma.walletTransaction.create({
+      data: {
+        rider_id: riderId,
+        amount_inr: amountInr,
+        type: 'withdrawal',
+        balance_after: newBalance,
+      },
+    });
+
+    return {
+      payoutId: `pout_${Math.random().toString(36).slice(2, 10)}`,
+      amountInr,
+      payoutUpi,
+      newBalance,
+      status: 'PROCESSED',
+      transactionId: tx.id,
+      timestamp: tx.created_at,
+    };
+  }
+
+  /**
    * Get rider wallet summary (balance + weekly earnings + transaction list)
    */
   static async getRiderWalletSummary(riderId: string) {

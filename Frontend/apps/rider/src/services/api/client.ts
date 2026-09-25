@@ -35,6 +35,11 @@ apiClient.interceptors.response.use(
       };
       if (error.response.status === 401) {
         localStorage.removeItem('lmc_rider_token');
+        const isRiderSubpath = window.location.pathname.startsWith('/rider');
+        const targetLogin = isRiderSubpath ? '/rider/login' : '/login';
+        if (window.location.pathname !== targetLogin) {
+          window.location.href = targetLogin;
+        }
       }
     } else if (error.request) {
       normalized = { status: 'network', message: 'Network error. Check your connection.', code: 'NETWORK_ERROR' };
