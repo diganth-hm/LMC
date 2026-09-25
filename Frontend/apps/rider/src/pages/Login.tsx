@@ -99,6 +99,28 @@ export const Login: React.FC = () => {
               {loading && <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>}
               Continue
             </button>
+
+            {/* Quick Demo Fill button */}
+            <div className="pt-4 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setPhone('9876543210');
+                  setStep('otp');
+                  setOtp('1234');
+                }}
+                className="w-full p-2.5 bg-[#E1F5EE] hover:bg-[#d0f0e4] border border-[#0F6E56]/30 rounded-md text-left transition-colors flex items-center justify-between group"
+              >
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-[#0F6E56]">⚡ Quick Demo Rider</span>
+                    <span className="text-[10px] bg-[#0F6E56] text-white px-1.5 py-0.2 rounded font-semibold">Guru Prasad</span>
+                  </div>
+                  <p className="text-[11px] text-[#0F6E56]/80">+91 98765 43210 · OTP: 1234</p>
+                </div>
+                <span className="text-xs font-semibold text-[#0F6E56] group-hover:translate-x-0.5 transition-transform">Auto-Fill →</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
