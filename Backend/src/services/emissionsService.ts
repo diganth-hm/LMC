@@ -38,10 +38,9 @@ export class EmissionsService {
     const unitsUsed = input.distanceKm / effectiveEfficiency;
     const co2Kg = Math.round(unitsUsed * emissionFactor * 100) / 100;
 
-    // Fuel cost estimation (INR per unit: Petrol ~102, EV ~8.5/kWh, Diesel ~90, CNG ~85)
+    // Fuel cost estimation (INR per unit: Petrol ~102, Diesel ~90, CNG ~85)
     const unitPriceMap: Record<string, number> = {
       petrol_2w: 102,
-      ev_2w: 8.5,
       diesel_3w: 90,
       cng_3w: 85,
     };

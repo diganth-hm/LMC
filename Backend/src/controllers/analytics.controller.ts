@@ -64,10 +64,9 @@ export class AnalyticsController {
       series,
       pctReduction,
       byVehicleType: {
-        petrol_2w: 42,
-        ev_2w: 38,
-        cng_3w: 12,
-        diesel_3w: 8,
+        petrol_2w: 62,
+        cng_3w: 26,
+        diesel_3w: 12,
       },
     });
   }

@@ -30,7 +30,6 @@ enum RiderTier {
 
 enum VehicleType {
   petrol_2w
-  ev_2w
   diesel_3w
   cng_3w
 }

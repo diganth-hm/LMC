@@ -99,7 +99,7 @@ export const mockCreditBatches: CreditBatch[] = [
   },
   {
     id: 'batch-blr-0826',
-    title: 'Bengaluru Tech Corridor EV & Green Route Credit',
+    title: 'Bengaluru Tech Corridor Green Route Credit',
     region: 'Bengaluru, Karnataka',
     sourcePeriod: 'August 2026',
     availableTonnes: 30,
@@ -174,7 +174,7 @@ export const mockOrders: Order[] = [
   {
     id: 'LMC-2026-0044',
     batchId: 'batch-blr-0826',
-    batchTitle: 'Bengaluru Tech Corridor EV Credit',
+    batchTitle: 'Bengaluru Tech Corridor Green Route Credit',
     quantityTonnes: 35,
     unitPriceRupees: 2150,
     subtotalRupees: 75250,

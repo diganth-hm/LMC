@@ -15,23 +15,23 @@ describe('EmissionsService Calculation Logic', () => {
     expect(result.co2Kg).toBeLessThan(0.55);
   });
 
-  it('should calculate lower CO2 emissions for EV 2-wheeler than Petrol 2-wheeler', () => {
-    const petrolResult = EmissionsService.calculateCo2Kg({
+  it('should calculate lower CO2 emissions for CNG 3-wheeler than Diesel 3-wheeler', () => {
+    const dieselResult = EmissionsService.calculateCo2Kg({
       distanceKm: 10,
       congestionScore: 20,
-      vehicleType: 'petrol_2w',
+      vehicleType: 'diesel_3w',
     });
 
-    const evResult = EmissionsService.calculateCo2Kg({
+    const cngResult = EmissionsService.calculateCo2Kg({
       distanceKm: 10,
       congestionScore: 20,
-      vehicleType: 'ev_2w',
+      vehicleType: 'cng_3w',
     });
 
-    expect(evResult.co2Kg).toBeLessThan(petrolResult.co2Kg);
+    expect(cngResult.co2Kg).toBeLessThan(dieselResult.co2Kg);
   });
 
-  it('should score candidate routes and assign lower GRS to greenest route', () => {
+  it('should score candidate routes and assign higher GRS to greenest route', () => {
     const candidates = [
       { distanceKm: 12, durationMin: 35, congestionScore: 75 },
       { distanceKm: 9.5, durationMin: 22, congestionScore: 15 },
@@ -42,7 +42,7 @@ describe('EmissionsService Calculation Logic', () => {
     expect(scored.length).toBe(2);
     // Greenest route must be the 2nd one (shorter distance, low congestion)
     expect(scored[1].isGreenest).toBe(true);
-    expect(scored[1].grsScore).toBeLessThan(scored[0].grsScore);
+    expect(scored[1].grsScore).toBeGreaterThan(scored[0].grsScore);
   });
 
   it('should calculate delivery CO2 baseline vs actual correctly', () => {

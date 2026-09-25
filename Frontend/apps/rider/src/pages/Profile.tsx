@@ -5,7 +5,6 @@ import { ChevronRight, LogOut, Bell, CreditCard, HelpCircle, Award, Bike, Zap, C
 
 const vehicleIcons: Record<string, React.ReactNode> = {
   'Petrol 2W': <Bike className="w-5 h-5 text-gray-600" />,
-  'EV 2W': <Zap className="w-5 h-5 text-[#0F6E56]" />,
   'CNG 3W': <Car className="w-5 h-5 text-amber-600" />,
   'Diesel 3W': <Car className="w-5 h-5 text-gray-600" />,
 };
@@ -78,7 +77,7 @@ export const Profile: React.FC = () => {
       <div className="px-5 mt-6">
         <h2 className="text-sm font-semibold text-gray-800 mb-3">Vehicle Type</h2>
         <div className="grid grid-cols-2 gap-2">
-          {(['Petrol 2W', 'EV 2W', 'CNG 3W', 'Diesel 3W'] as const).map(type => (
+          {(['Petrol 2W', 'CNG 3W', 'Diesel 3W'] as const).map(type => (
             <div
               key={type}
               onClick={() => handleVehicleChange(type)}

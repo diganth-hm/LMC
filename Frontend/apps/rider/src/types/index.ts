@@ -2,7 +2,7 @@ export interface RiderProfile {
   id: string;
   name: string;
   phone: string;
-  vehicleType: 'Petrol 2W' | 'EV 2W' | 'CNG 3W' | 'Diesel 3W';
+  vehicleType: 'Petrol 2W' | 'CNG 3W' | 'Diesel 3W';
   memberSince: string;
   payoutAccount: string;
   avatarUrl: string;

@@ -5,7 +5,6 @@
 /** Emission factors: kg CO₂ per unit of fuel consumed */
 export const EMISSION_FACTORS: Record<string, number> = {
   petrol_2w: 2.31,   // kg CO₂ per litre
-  ev_2w: 0.82,       // kg CO₂ per kWh
   diesel_3w: 2.68,   // kg CO₂ per litre
   cng_3w: 1.97,      // kg CO₂ per kg CNG
 };
@@ -13,7 +12,6 @@ export const EMISSION_FACTORS: Record<string, number> = {
 /** Base fuel efficiency (km/L or km/kWh) at optimal conditions, by vehicle type */
 export const BASE_FUEL_EFFICIENCY: Record<string, number> = {
   petrol_2w: 45,   // km per litre
-  ev_2w: 80,       // km per kWh
   diesel_3w: 18,   // km per litre
   cng_3w: 25,      // km per kg CNG
 };

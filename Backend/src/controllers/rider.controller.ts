@@ -68,7 +68,7 @@ export class RiderController {
       }
 
       const { vehicleType } = req.body;
-      const validTypes: VehicleType[] = ['petrol_2w', 'ev_2w', 'diesel_3w', 'cng_3w'];
+      const validTypes: VehicleType[] = ['petrol_2w', 'diesel_3w', 'cng_3w'];
 
       if (!vehicleType || !validTypes.includes(vehicleType as VehicleType)) {
         sendError(res, 'INVALID_VEHICLE_TYPE', `Vehicle type must be one of: ${validTypes.join(', ')}`, 400);

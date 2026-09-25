@@ -73,13 +73,13 @@ export async function seedRidersAndFleets() {
 
   await prisma.vehicle.createMany({
     data: [
-      { rider_id: guruRider.id, type: 'ev_2w' as VehicleType },
+      { rider_id: guruRider.id, type: 'petrol_2w' as VehicleType },
     ],
     skipDuplicates: true,
   });
 
   // 4. Seed 10 additional plausible riders
-  const vehicleTypes: VehicleType[] = ['petrol_2w', 'ev_2w', 'cng_3w', 'diesel_3w'];
+  const vehicleTypes: VehicleType[] = ['petrol_2w', 'cng_3w', 'diesel_3w'];
   const riderNames = [
     'Ramesh Kumar', 'Suresh Rai', 'Ananya Shetty', 'Praveen Poojary',
     'Mohammed Kaif', 'Deepak V', 'Kavya Nair', 'Vikram Singh',
