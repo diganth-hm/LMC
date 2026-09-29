@@ -41,7 +41,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const riderMarkerRef = useRef<L.Marker | null>(null);
 
-  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '***REMOVED***';
+  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -59,21 +59,50 @@ export const MapComponent: React.FC<MapComponentProps> = ({
 
     mapInstanceRef.current = map;
 
-    // Trigger invalidateSize to ensure tiles render across container bounds
-    const resizeTimer1 = setTimeout(() => map.invalidateSize(), 50);
-    const resizeTimer2 = setTimeout(() => map.invalidateSize(), 250);
+    // ResizeObserver for reliable container sizing & tile invalidation
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    resizeObserver.observe(mapContainerRef.current);
 
-    const hasValidMapboxToken = MAPBOX_TOKEN && MAPBOX_TOKEN.startsWith('pk.') && !MAPBOX_TOKEN.includes('sample');
-    const tileUrl = hasValidMapboxToken
+    const resizeTimer1 = setTimeout(() => map.invalidateSize(), 100);
+    const resizeTimer2 = setTimeout(() => map.invalidateSize(), 300);
+
+    const isExplicitValidToken =
+      MAPBOX_TOKEN &&
+      MAPBOX_TOKEN.startsWith('pk.') &&
+      !MAPBOX_TOKEN.includes('sample') &&
+      !MAPBOX_TOKEN.includes('***REMOVED***') &&
+      !MAPBOX_TOKEN.includes('fake');
+
+    const fallbackTileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const tileUrl = isExplicitValidToken
       ? `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      : fallbackTileUrl;
 
-    L.tileLayer(tileUrl, {
+    const mainTileLayer = L.tileLayer(tileUrl, {
       maxZoom: 19,
-      tileSize: hasValidMapboxToken ? 512 : 256,
-      zoomOffset: hasValidMapboxToken ? -1 : 0,
-      subdomains: 'abcd',
+      tileSize: isExplicitValidToken ? 512 : 256,
+      zoomOffset: isExplicitValidToken ? -1 : 0,
+      subdomains: isExplicitValidToken ? 'abcd' : 'abc',
     }).addTo(map);
+
+    // Fallback if Mapbox tiles fail to load (e.g., HTTP 401/403)
+    if (isExplicitValidToken) {
+      let fallbackTriggered = false;
+      mainTileLayer.on('tileerror', () => {
+        if (!fallbackTriggered) {
+          fallbackTriggered = true;
+          map.removeLayer(mainTileLayer);
+          L.tileLayer(fallbackTileUrl, {
+            maxZoom: 19,
+            tileSize: 256,
+            zoomOffset: 0,
+            subdomains: 'abc',
+          }).addTo(map);
+        }
+      });
+    }
 
     // Custom HTML icons
     const pickupIcon = L.divIcon({
@@ -183,6 +212,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     return () => {
       clearTimeout(resizeTimer1);
       clearTimeout(resizeTimer2);
+      resizeObserver.disconnect();
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;

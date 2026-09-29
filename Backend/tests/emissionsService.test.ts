@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import { EmissionsService } from '../src/services/emissionsService';
 
 describe('EmissionsService Calculation Logic', () => {

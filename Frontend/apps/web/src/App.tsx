@@ -4,6 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PlatformLayout } from './layouts/PlatformLayout';
 import { BuyerLayout } from './layouts/BuyerLayout';
 
+import HomePage from './pages/landing/HomePage';
+import InstallLanding from './pages/landing/InstallLanding';
+import IntroSplash from './components/landing/IntroSplash';
+
 import { Login } from './pages/auth/Login';
 import { DashboardOverview } from './pages/platform/DashboardOverview';
 import { FleetAnalytics } from './pages/platform/FleetAnalytics';
@@ -26,7 +30,6 @@ import { ImpactSummary } from './pages/buyer/ImpactSummary';
 import { BuyerSettings } from './pages/buyer/BuyerSettings';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
-import { useAuthStore } from './store/authStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,20 +41,17 @@ const queryClient = new QueryClient({
   },
 });
 
-const RootRedirect = () => {
-  const { isAuthenticated, token, user } = useAuthStore();
-  if (!isAuthenticated || !token) {
-    return <Navigate to="/login" replace />;
-  }
-  const target = user?.role === 'corporate_buyer' ? '/buyer' : '/platform';
-  return <Navigate to={target} replace />;
-};
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <IntroSplash />
         <Routes>
+          {/* Landing & Home */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/install" element={<InstallLanding />} />
+
           {/* Auth */}
           <Route path="/login" element={<Login />} />
 
@@ -94,9 +94,8 @@ function App() {
             <Route path="settings" element={<BuyerSettings />} />
           </Route>
 
-          {/* Default redirect */}
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="*" element={<RootRedirect />} />
+          {/* Default fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
@@ -104,3 +103,4 @@ function App() {
 }
 
 export default App;
+

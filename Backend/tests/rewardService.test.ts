@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import { REWARD_RATE_INR_PER_KG, MIN_CO2_THRESHOLD_KG } from '../src/config/constants';
 
 describe('Reward Calculation Math', () => {

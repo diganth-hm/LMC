@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import { PRICING_TIERS } from '../src/config/constants';
 
 describe('Credit Aggregation & Pricing Logic', () => {

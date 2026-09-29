@@ -4,8 +4,21 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        xs: '26rem',
+      },
       colors: {
         brand: {
+          50: '#fff8f2',
+          100: '#ffefd9',
+          200: '#ffddba',
+          300: '#ffc585',
+          400: '#ffa050',
+          500: '#fc8019',
+          600: '#e67312',
+          700: '#bf5c0e',
+          800: '#984a14',
+          900: '#7c3e15',
           // Primary — deep emerald (sustainability / savings / CTAs)
           teal: '#0F6E56',
           'teal-strong': '#0B5A47',
@@ -24,6 +37,10 @@ export default {
           charcoal: '#18211D',
           'charcoal-light': '#24312B',
           bg: '#F7F7F4',
+        },
+        ink: {
+          DEFAULT: '#2d1a0d',
+          strong: '#1f1208',
         },
       },
       borderRadius: {
@@ -50,3 +67,4 @@ export default {
   },
   plugins: [],
 } satisfies Config;
+
