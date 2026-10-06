@@ -55,7 +55,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            to="/install"
+            to="/rider"
             className="hidden items-center gap-1.5 rounded-full bg-brand-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(252,128,25,0.35)] transition-colors hover:bg-brand-600 xs:inline-flex"
           >
             Install App
@@ -93,7 +93,7 @@ export default function Navbar() {
             </a>
           ))}
           <Link
-            to="/install"
+            to="/rider"
             onClick={() => setOpen(false)}
             className="mt-2 flex items-center justify-center gap-1.5 rounded-full bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-600"
           >

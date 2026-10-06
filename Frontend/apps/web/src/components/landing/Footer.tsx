@@ -42,7 +42,7 @@ export default function Footer() {
             <p className="mt-3 text-sm text-ink/60">Free for riders · Android &amp; iOS</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
-                to="/install"
+                to="/rider"
                 className="inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(252,128,25,0.35)] transition-colors hover:bg-brand-600"
               >
                 Install App

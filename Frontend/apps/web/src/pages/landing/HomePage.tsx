@@ -153,7 +153,7 @@ export default function HomePage() {
               <Reveal delay={270}>
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
                   <Link
-                    to="/install"
+                    to="/rider"
                     className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-500 px-7 py-3.5 font-semibold text-white shadow-[0_10px_24px_rgba(252,128,25,0.4)] transition-all hover:-translate-y-0.5 hover:bg-brand-600 sm:w-auto"
                   >
                     Get the App
@@ -173,18 +173,20 @@ export default function HomePage() {
               <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-tr from-orange-200/70 to-amber-100/50 blur-xl" />
               <div className="relative overflow-hidden rounded-[2rem] border-4 border-white shadow-[0_30px_60px_rgba(45,26,13,0.18)]">
                 <video
-                  src="/media/lmcfinal.mp4"
+                  src="/media/ridervideo.mp4"
                   autoPlay
                   loop
                   muted
                   playsInline
                   className="aspect-video w-full object-cover"
                 />
+                {/* LMC logo placed directly over the Gemini sparkle watermark */}
                 <img
                   src={brandLogo}
                   alt=""
                   aria-hidden="true"
-                  className="pointer-events-none absolute bottom-[3.5%] right-[1.5%] w-[14%] max-w-[100px] drop-shadow-[0_2px_6px_rgba(45,26,13,0.45)]"
+                  className="pointer-events-none absolute drop-shadow-[0_2px_8px_rgba(45,26,13,0.5)]"
+                  style={{ bottom: '15%', right: '7%', width: '20%', maxWidth: '120px' }}
                 />
               </div>
             </Reveal>
@@ -341,7 +343,7 @@ export default function HomePage() {
               </p>
               <div className="mt-8">
                 <Link
-                  to="/install"
+                  to="/rider"
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 font-semibold text-brand-600 shadow-[0_12px_28px_rgba(0,0,0,0.18)] transition-all hover:-translate-y-0.5 hover:bg-orange-50"
                 >
                   Install App
