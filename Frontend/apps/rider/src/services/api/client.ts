@@ -28,12 +28,15 @@ apiClient.interceptors.response.use(
     let normalized: ApiError;
     if (error.response) {
       const body = error.response.data;
+      const errorCode = body?.error?.code || `HTTP_${error.response.status}`;
       normalized = {
         status: error.response.status,
         message: body?.error?.message || 'Server error',
-        code: body?.error?.code || `HTTP_${error.response.status}`,
+        code: errorCode,
       };
-      if (error.response.status === 401) {
+      // Treat 401 or RIDER_NOT_FOUND (stale/cross-env token) as auth failures
+      const isAuthFailure = error.response.status === 401 || errorCode === 'RIDER_NOT_FOUND';
+      if (isAuthFailure) {
         localStorage.removeItem('lmc_rider_token');
         const pathname = window.location.pathname;
         const targetLogin = pathname.startsWith('/login/rider')

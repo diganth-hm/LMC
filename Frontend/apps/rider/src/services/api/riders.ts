@@ -81,10 +81,10 @@ export const riderService = {
       distanceKm: d.distanceKm ?? d.distance_km ?? 0,
       baseFeeRupees: d.baseFeeRupees ?? d.base_fee ?? 0,
       status: d.status || 'assigned',
-      pickupLat: d.pickupLat ?? d.pickup_lat,
-      pickupLng: d.pickupLng ?? d.pickup_lng,
-      dropLat: d.dropLat ?? d.drop_lat,
-      dropLng: d.dropLng ?? d.drop_lng,
+      pickupLat: Number(d.pickupLat ?? d.pickup_lat),
+      pickupLng: Number(d.pickupLng ?? d.pickup_lng),
+      dropLat: Number(d.dropLat ?? d.drop_lat),
+      dropLng: Number(d.dropLng ?? d.drop_lng),
     };
   },
 

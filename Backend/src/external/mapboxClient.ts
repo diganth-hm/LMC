@@ -44,7 +44,7 @@ export async function getRouteCandidates(
 
   if (env.MAPBOX_ACCESS_TOKEN && env.MAPBOX_ACCESS_TOKEN !== 'mock_token') {
     try {
-      const url = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${pickupLng},${pickupLat};${dropLng},${dropLat}?alternatives=true&annotations=congestion,speed&access_token=${env.MAPBOX_ACCESS_TOKEN}`;
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${pickupLng},${pickupLat};${dropLng},${dropLat}?alternatives=true&annotations=congestion,speed&overview=full&access_token=${env.MAPBOX_ACCESS_TOKEN}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = (await response.json()) as { routes?: Array<{ distance: number; duration: number; geometry?: string }> };
