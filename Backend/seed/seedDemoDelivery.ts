@@ -18,15 +18,15 @@ import { prisma } from '../src/models/prisma';
 
 // ── Fixed demo coordinates ────────────────────────────────────────────────────
 const DEMO_PICKUP = {
-  lat: 12.8698,
-  lng: 74.8428,
-  label: 'Hampankatta Junction, Mangaluru',
+  lat: 12.9716,
+  lng: 77.6408,
+  label: 'Indiranagar 100 Feet Road, Bengaluru',
 };
 
 const DEMO_DROP = {
-  lat: 12.8874,
-  lng: 74.8480,
-  label: 'Kadri Manjunath Temple, Kadri Hills, Mangaluru',
+  lat: 12.9352,
+  lng: 77.6245,
+  label: 'Koramangala 5th Block, Bengaluru',
 };
 
 // ── Demo rider phone (matches seedRiders.ts) ──────────────────────────────────
@@ -59,9 +59,9 @@ async function main() {
     process.exit(1);
   }
 
-  const city = await prisma.city.findFirst({ where: { name: 'Mangaluru' } });
+  const city = await prisma.city.findFirst({ where: { name: 'Bengaluru' } });
   if (!city) {
-    console.error('❌ Mangaluru city not found. Run the full seed first: npm run db:seed');
+    console.error('❌ Bengaluru city not found. Run the full seed first: npm run db:seed');
     process.exit(1);
   }
 
