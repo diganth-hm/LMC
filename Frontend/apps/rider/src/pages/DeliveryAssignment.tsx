@@ -17,10 +17,10 @@ export const DeliveryAssignment: React.FC = () => {
     }
   };
 
-  const pickupLat = 12.9141;
-  const pickupLng = 74.8560;
-  const dropLat = 12.9341;
-  const dropLng = 74.8760;
+  const pickupLat = assignment?.pickupLat || 12.9141;
+  const pickupLng = assignment?.pickupLng || 74.8560;
+  const dropLat = assignment?.dropLat || 12.9341;
+  const dropLng = assignment?.dropLng || 74.8760;
 
   return (
     <div className="min-h-screen bg-[#FBFAF7] flex flex-col">

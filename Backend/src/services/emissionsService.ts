@@ -20,6 +20,7 @@ export interface RouteScoringResult {
   fuelCostInr: number;
   grsScore: number;
   isGreenest?: boolean;
+  geometry?: string;
 }
 
 export class EmissionsService {
@@ -54,7 +55,7 @@ export class EmissionsService {
    * Compute GRS (Green Route Score 0-100, lower = greener) for candidate routes
    */
   static scoreCandidateRoutes(
-    candidates: Array<{ distanceKm: number; durationMin: number; congestionScore: number }>,
+    candidates: Array<{ distanceKm: number; durationMin: number; congestionScore: number; geometry?: string }>,
     vehicleType: string
   ): RouteScoringResult[] {
     if (candidates.length === 0) return [];

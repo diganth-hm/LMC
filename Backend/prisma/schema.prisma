@@ -167,6 +167,7 @@ model Route {
   grs_score        Float
   co2_kg           Float
   is_selected      Boolean @default(false)
+  geometry         String? // Storing Mapbox polyline
 
   delivery         Delivery        @relation(fields: [delivery_id], references: [id])
   route_selection  RouteSelection?

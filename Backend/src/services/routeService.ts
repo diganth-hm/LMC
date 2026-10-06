@@ -36,6 +36,7 @@ export class RouteService {
         fuelCostInr: Math.round(r.co2_kg * 45 * 100) / 100, // estimated
         isSelected: r.is_selected,
         isGreenest: r.grs_score === maxGrs,
+        geometry: r.geometry,
       }));
     }
 
@@ -65,6 +66,7 @@ export class RouteService {
             grs_score: c.grsScore,
             co2_kg: c.co2Kg,
             is_selected: false,
+            geometry: c.geometry,
           },
         })
       )
@@ -83,6 +85,7 @@ export class RouteService {
       fuelCostInr: scoredCandidates[idx].fuelCostInr,
       isSelected: r.is_selected,
       isGreenest: r.grs_score === maxGrs,
+      geometry: r.geometry,
     }));
   }
 

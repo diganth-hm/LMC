@@ -4,6 +4,7 @@ import { useRoutes, useDeliveryAssignment } from '../hooks/useRiderQueries';
 import { useDeliveryStore } from '../store/deliveryStore';
 import { ArrowLeft, Leaf, Clock, MapPin, Fuel } from 'lucide-react';
 import { MapComponent, RoutePolyline } from '../components/MapComponent';
+import { decodePolyline } from '../utils/polyline';
 
 export const RouteComparison: React.FC = () => {
   const navigate = useNavigate();
@@ -16,10 +17,11 @@ export const RouteComparison: React.FC = () => {
 
   const { data: routes, isLoading } = useRoutes(assignment?.id || '');
 
-  const pickupLat = 12.9141;
-  const pickupLng = 74.8560;
-  const dropLat = 12.9341;
-  const dropLng = 74.8760;
+  // Use assignment coordinates with fallback
+  const pickupLat = assignment?.pickupLat || 12.9141;
+  const pickupLng = assignment?.pickupLng || 74.8560;
+  const dropLat = assignment?.dropLat || 12.9341;
+  const dropLng = assignment?.dropLng || 74.8760;
 
   // Auto-select Green Route by default
   React.useEffect(() => {
@@ -30,19 +32,28 @@ export const RouteComparison: React.FC = () => {
 
   // Convert routes into polyline data for MapComponent
   const polylineRoutes: RoutePolyline[] = (routes || []).map((r, idx) => {
-    const offsetFactor = (idx - 1) * 0.008;
-    const midLat = pickupLat + (dropLat - pickupLat) * 0.5 + offsetFactor;
-    const midLng = pickupLng + (dropLng - pickupLng) * 0.5 - offsetFactor;
+    let coordinates: [number, number][] = [];
+    
+    if (r.geometry) {
+      coordinates = decodePolyline(r.geometry);
+    } else {
+      // Fallback straight line if Mapbox geometry failed
+      const offsetFactor = (idx - 1) * 0.008;
+      const midLat = pickupLat + (dropLat - pickupLat) * 0.5 + offsetFactor;
+      const midLng = pickupLng + (dropLng - pickupLng) * 0.5 - offsetFactor;
+      coordinates = [
+        [pickupLat, pickupLng],
+        [midLat, midLng],
+        [dropLat, dropLng],
+      ];
+    }
+
     return {
       id: r.id,
       name: r.name,
       color: r.color || (idx === 0 ? '#0F6E56' : idx === 1 ? '#3b82f6' : '#f59e0b'),
       isGreenest: Boolean(r.isGreenest),
-      coordinates: [
-        [pickupLat, pickupLng],
-        [midLat, midLng],
-        [dropLat, dropLng],
-      ],
+      coordinates,
     };
   });
 

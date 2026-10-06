@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useDeliveryStore } from '../store/deliveryStore';
 import { Leaf } from 'lucide-react';
 import { MapComponent } from '../components/MapComponent';
+import { decodePolyline } from '../utils/polyline';
 
 export const LiveTracking: React.FC = () => {
   const navigate = useNavigate();
   const route = useDeliveryStore(s => s.selectedRoute);
+  const assignment = useDeliveryStore(s => s.currentAssignment);
   const [co2Accumulated, setCo2Accumulated] = useState(0);
   const [distRemaining, setDistRemaining] = useState(route?.distanceKm || 5.6);
   const [arrived, setArrived] = useState(false);
@@ -35,20 +37,27 @@ export const LiveTracking: React.FC = () => {
     navigate('/delivery/completion');
   };
 
-  const pickupLat = 12.9141;
-  const pickupLng = 74.8560;
-  const dropLat = 12.9341;
-  const dropLng = 74.8760;
+  const pickupLat = assignment?.pickupLat || 12.9141;
+  const pickupLng = assignment?.pickupLng || 74.8560;
+  const dropLat = assignment?.dropLat || 12.9341;
+  const dropLng = assignment?.dropLng || 74.8760;
+
+  let coordinates: [number, number][] = [];
+  if (route?.geometry) {
+    coordinates = decodePolyline(route.geometry);
+  } else {
+    coordinates = [
+      [pickupLat, pickupLng] as [number, number],
+      [pickupLat + 0.01, pickupLng + 0.008] as [number, number],
+      [dropLat, dropLng] as [number, number],
+    ];
+  }
 
   const activeRoute = {
     id: route?.id || 'live-route',
     name: route?.name || 'Green Route',
     color: route?.color || '#0F6E56',
-    coordinates: [
-      [pickupLat, pickupLng] as [number, number],
-      [pickupLat + 0.01, pickupLng + 0.008] as [number, number],
-      [dropLat, dropLng] as [number, number],
-    ],
+    coordinates,
   };
 
   return (

@@ -81,6 +81,10 @@ export const riderService = {
       distanceKm: d.distanceKm ?? d.distance_km ?? 0,
       baseFeeRupees: d.baseFeeRupees ?? d.base_fee ?? 0,
       status: d.status || 'assigned',
+      pickupLat: d.pickupLat ?? d.pickup_lat,
+      pickupLng: d.pickupLng ?? d.pickup_lng,
+      dropLat: d.dropLat ?? d.drop_lat,
+      dropLng: d.dropLng ?? d.drop_lng,
     };
   },
 
@@ -104,6 +108,7 @@ export const riderService = {
       fuelCostRupees: number;
       grsScore: number;
       isGreenest: boolean;
+      geometry?: string;
     }
 
     const parsed: ParsedRoute[] = rawRoutes.map((r: Record<string, unknown>) => ({
@@ -114,6 +119,7 @@ export const riderService = {
       fuelCostRupees: (r.fuelCostInr as number) ?? (r.fuel_cost_inr as number) ?? 0,
       grsScore: (r.grsScore as number) ?? (r.grs_score as number) ?? 0,
       isGreenest: (r.isGreenest as boolean) ?? false,
+      geometry: (r.geometry as string) || undefined,
     }));
 
     // Find greenest route index (lowest CO2 emissions)
@@ -162,6 +168,7 @@ export const riderService = {
         grsScore,
         isGreenest: pos === 0,
         color: colors[pos],
+        geometry: r.geometry,
       };
     });
   },

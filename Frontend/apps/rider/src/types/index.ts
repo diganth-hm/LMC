@@ -25,6 +25,10 @@ export interface DeliveryAssignment {
   distanceKm: number;
   baseFeeRupees: number;
   status: 'assigned' | 'in_progress' | 'completed';
+  pickupLat?: number;
+  pickupLng?: number;
+  dropLat?: number;
+  dropLng?: number;
 }
 
 export interface RouteOption {
@@ -37,6 +41,7 @@ export interface RouteOption {
   grsScore: number;
   isGreenest: boolean;
   color: string;
+  geometry?: string;
 }
 
 export interface DeliveryCompletion {
