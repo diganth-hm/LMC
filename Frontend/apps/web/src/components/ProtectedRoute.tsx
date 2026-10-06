@@ -16,7 +16,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
   }
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    const fallback = user.role === 'corporate_buyer' ? '/buyer' : '/platform';
+    const fallback = user.role === 'corporate_buyer' ? '/buyer' : '/admin';
     return <Navigate to={fallback} replace />;
   }
 

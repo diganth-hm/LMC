@@ -65,7 +65,7 @@ export const BuyerLayout: React.FC = () => {
       <div className="border-t border-white/10 px-3 py-4 space-y-1">
         {!collapsed && (
           <button
-            onClick={() => { switchRole('platform_admin'); navigate('/platform'); }}
+            onClick={() => { switchRole('platform_admin'); navigate('/admin'); }}
             className="flex items-center gap-2 w-full px-3 py-2 text-xs text-white/60 hover:text-white hover:bg-white/5 rounded-md transition-colors"
           >
             <ChevronRight className="w-3.5 h-3.5" />

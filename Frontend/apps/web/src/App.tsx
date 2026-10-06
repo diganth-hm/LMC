@@ -30,6 +30,7 @@ import { ImpactSummary } from './pages/buyer/ImpactSummary';
 import { BuyerSettings } from './pages/buyer/BuyerSettings';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
+import RiderRedirect from './components/RiderRedirect';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,9 +56,13 @@ function App() {
           {/* Auth */}
           <Route path="/login" element={<Login />} />
 
-          {/* Platform Dashboard */}
+          {/* Rider App — separate SPA on :5174, redirect browser there */}
+          <Route path="/rider" element={<RiderRedirect />} />
+          <Route path="/rider/*" element={<RiderRedirect />} />
+
+          {/* Platform Admin Dashboard */}
           <Route
-            path="/platform"
+            path="/admin"
             element={
               <ProtectedRoute allowedRoles={['platform_admin']}>
                 <PlatformLayout />
@@ -73,7 +78,7 @@ function App() {
             <Route path="reports" element={<Reports />} />
           </Route>
 
-          {/* Buyer Portal */}
+          {/* Corporate Buyer Portal */}
           <Route
             path="/buyer"
             element={

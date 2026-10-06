@@ -4,13 +4,13 @@ import { LayoutDashboard, Users, Leaf, Trophy, Truck, Receipt, FileText, Menu, X
 import { useAuthStore } from '../store/authStore';
 
 const navItems = [
-  { to: '/platform', icon: LayoutDashboard, label: 'Overview', end: true },
-  { to: '/platform/fleet-analytics', icon: Users, label: 'Fleet Analytics' },
-  { to: '/platform/emissions', icon: Leaf, label: 'Emissions' },
-  { to: '/platform/leaderboard', icon: Trophy, label: 'Leaderboard' },
-  { to: '/platform/delivery-analytics', icon: Truck, label: 'Delivery Analytics' },
-  { to: '/platform/billing', icon: Receipt, label: 'Billing' },
-  { to: '/platform/reports', icon: FileText, label: 'Reports' },
+  { to: '/admin', icon: LayoutDashboard, label: 'Overview', end: true },
+  { to: '/admin/fleet-analytics', icon: Users, label: 'Fleet Analytics' },
+  { to: '/admin/emissions', icon: Leaf, label: 'Emissions' },
+  { to: '/admin/leaderboard', icon: Trophy, label: 'Leaderboard' },
+  { to: '/admin/delivery-analytics', icon: Truck, label: 'Delivery Analytics' },
+  { to: '/admin/billing', icon: Receipt, label: 'Billing' },
+  { to: '/admin/reports', icon: FileText, label: 'Reports' },
 ];
 
 export const PlatformLayout: React.FC = () => {

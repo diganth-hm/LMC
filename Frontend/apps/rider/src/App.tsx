@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 15_000, retry: 1, refetchOnWindowFocus: false } },
 });
 
-const basename = typeof window !== 'undefined' && window.location.pathname.startsWith('/rider') ? '/rider' : '/';
+const basename = '/';
 
 function App() {
   return (

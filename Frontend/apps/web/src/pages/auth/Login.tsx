@@ -22,7 +22,7 @@ export const Login: React.FC = () => {
     try {
       const result = await authService.login(loginEmail, loginPassword);
       login(result.user, result.token);
-      const target = result.user.role === 'corporate_buyer' ? '/buyer' : '/platform';
+      const target = result.user.role === 'corporate_buyer' ? '/buyer' : '/admin';
       navigate(target);
     } catch (err: unknown) {
       const apiErr = err as { message?: string };

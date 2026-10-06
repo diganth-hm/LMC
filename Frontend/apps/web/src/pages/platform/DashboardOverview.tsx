@@ -41,7 +41,7 @@ export const DashboardOverview: React.FC = () => {
           trendLabel="vs prev"
           icon={<Users className="w-4 h-4 text-[#5B4B8A]" />}
           accentColor="bg-[#F3F0F9]"
-          onClick={() => navigate('/platform/fleet-analytics')}
+          onClick={() => navigate('/admin/fleet-analytics')}
         />
         <KPICard
           label="CO₂ Saved"
@@ -50,7 +50,7 @@ export const DashboardOverview: React.FC = () => {
           trendLabel="vs prev"
           icon={<Leaf className="w-4 h-4 text-[#0F6E56]" />}
           accentColor="bg-[#E1F5EE]"
-          onClick={() => navigate('/platform/emissions')}
+          onClick={() => navigate('/admin/emissions')}
         />
         <KPICard
           label="Green Bonuses Paid"
@@ -59,7 +59,7 @@ export const DashboardOverview: React.FC = () => {
           trendLabel="vs prev"
           icon={<DollarSign className="w-4 h-4 text-[#854F0B]" />}
           accentColor="bg-[#FEF3C7]"
-          onClick={() => navigate('/platform/billing')}
+          onClick={() => navigate('/admin/billing')}
         />
         <KPICard
           label="Avg GRS Score"
@@ -68,7 +68,7 @@ export const DashboardOverview: React.FC = () => {
           trendLabel="vs prev"
           icon={<Target className="w-4 h-4 text-[#5B4B8A]" />}
           accentColor="bg-[#F3F0F9]"
-          onClick={() => navigate('/platform/leaderboard')}
+          onClick={() => navigate('/admin/leaderboard')}
         />
       </div>
 
@@ -97,7 +97,7 @@ export const DashboardOverview: React.FC = () => {
         <div className="bg-white rounded-md border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-800">Top Riders</h2>
-            <button onClick={() => navigate('/platform/leaderboard')} className="text-xs text-[#5B4B8A] hover:underline font-medium">
+            <button onClick={() => navigate('/admin/leaderboard')} className="text-xs text-[#5B4B8A] hover:underline font-medium">
               View all →
             </button>
           </div>
