@@ -1,15 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { Loader2, Share } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import loginIntro from '../assets/loginintro.png';
 
-// Optional: point to a hosted APK/Play Store link via env, e.g. VITE_INSTALL_URL
-const INSTALL_URL = import.meta.env.VITE_INSTALL_URL || '';
-
 export default function InstallLanding() {
-  const [status, setStatus] = useState('default'); // default | pending | coming-soon | ios-hint | installed
-  const [installPrompt, setInstallPrompt] = useState(null);
   const [allowFloat, setAllowFloat] = useState(false);
 
   const rootRef = useRef(null);
@@ -17,23 +11,6 @@ export default function InstallLanding() {
   const sheenRef = useRef(null);
   const bubble1Ref = useRef(null);
   const bubble2Ref = useRef(null);
-
-  // PWA install availability (Android/Chrome)
-  useEffect(() => {
-    const onBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setInstallPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-
-    const onInstalled = () => setStatus('installed');
-    window.addEventListener('appinstalled', onInstalled);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', onInstalled);
-    };
-  }, []);
 
   // Entrance choreography + ambient motion
   useGSAP(
@@ -82,50 +59,9 @@ export default function InstallLanding() {
     { scope: rootRef }
   );
 
-  const isIOS = () =>
-    /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-  const handleInstall = async () => {
-    if (status === 'pending') return;
-    setStatus('pending');
-
-    // 1) Native PWA install dialog when available (Android/Chrome)
-    if (installPrompt) {
-      installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      setStatus(outcome === 'accepted' ? 'installed' : 'default');
-      setInstallPrompt(null);
-      return;
-    }
-
-    // 2) Hosted package link (APK / store) when configured
-    if (INSTALL_URL) {
-      try {
-        const res = await fetch(INSTALL_URL, { method: 'HEAD' });
-        if (res.ok) {
-          window.location.href = INSTALL_URL;
-          return;
-        }
-      } catch {
-        /* fall through to fallback */
-      }
-    }
-
-    // 3) iOS Safari: guide users to Add to Home Screen
-    if (isIOS()) {
-      setStatus('ios-hint');
-      setTimeout(() => setStatus('default'), 8000);
-      return;
-    }
-
-    // 4) Fallback — never show a broken link or error page
-    setStatus('coming-soon');
-    setTimeout(() => setStatus('default'), 4000);
+  const handleInstall = () => {
+    window.location.href = '/rider/login';
   };
-
-  const isFallback = status === 'coming-soon' || status === 'ios-hint';
-  const isPending = status === 'pending';
 
   return (
     <div
@@ -165,32 +101,13 @@ export default function InstallLanding() {
 
         <button
           onClick={handleInstall}
-          disabled={isPending}
-          className="install-btn anim-item mt-9 inline-flex w-full cursor-pointer items-center justify-center gap-2 px-10 py-3.5 text-base font-semibold opacity-0 transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60 disabled:cursor-wait hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] sm:w-auto"
+          className="install-btn anim-item mt-9 inline-flex w-full cursor-pointer items-center justify-center gap-2 px-10 py-3.5 text-base font-semibold opacity-0 transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] sm:w-auto"
         >
-          {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-          {status === 'installed' ? 'Opening App…' : 'Install App'}
+          Install App
         </button>
 
         <p className="anim-item mt-3 text-xs text-white/70 opacity-0">
-          Free · No sign-up needed
-        </p>
-
-        <p
-          className={`mt-4 text-sm font-medium text-white transition-all duration-300 ${
-            isFallback ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-          }`}
-          aria-live="polite"
-          role="status"
-        >
-          {status === 'ios-hint' ? (
-            <span className="inline-flex items-center gap-1.5">
-              <Share className="h-4 w-4" aria-hidden="true" />
-              Tap Share → "Add to Home Screen"
-            </span>
-          ) : (
-            'App coming soon'
-          )}
+          Free · Sign in to get started
         </p>
       </div>
     </div>
